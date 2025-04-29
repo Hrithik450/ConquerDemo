@@ -15,10 +15,21 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+export const users = pgTable(
+  "users",
+  {
+    userId: uuid("userId").defaultRandom().primaryKey(),
+  },
+  (table) => ({
+    
+  })
+);
+
+// example: mobiles, laptops etc.
 export const categories = pgTable(
   "categories",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    categoryId: uuid("categoryId").defaultRandom().primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     description: text("description"),
@@ -41,10 +52,11 @@ export const categories = pgTable(
   }
 );
 
+// apple, samsung, etc,
 export const brands = pgTable(
   "brands",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    brandId: uuid("brandId").defaultRandom().primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     description: text("description"),
@@ -64,15 +76,16 @@ export const brands = pgTable(
   }
 );
 
+// iphones, apple pencil, spen, etc.
 export const brandCategories = pgTable(
   "brandCategories",
   {
     brandId: uuid("brandId")
       .notNull()
-      .references(() => brands.id, { onDelete: "cascade" }),
+      .references(() => brands.brandId, { onDelete: "cascade" }),
     categoryId: uuid("categoryId")
       .notNull()
-      .references(() => categories.id, { onDelete: "cascade" }),
+      .references(() => categories.categoryId, { onDelete: "cascade" }),
     brandCategoryName: varchar("brandCategoryName"),
     createdAt: timestamp("createdAt", { withTimezone: true })
       .defaultNow()
@@ -85,10 +98,11 @@ export const brandCategories = pgTable(
   }
 );
 
+// iphone 15, iphone 16, macbook m1, etc.
 export const products = pgTable(
   "products",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    productId: uuid("productId").defaultRandom().primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     description: text("description"),
@@ -96,10 +110,10 @@ export const products = pgTable(
     basePrice: decimal("basePrice", { precision: 10, scale: 2 }),
     brandId: uuid("brandId")
       .notNull()
-      .references(() => brands.id, { onDelete: "restrict" }),
+      .references(() => brands.brandId, { onDelete: "restrict" }),
     categoryId: uuid("categoryId")
       .notNull()
-      .references(() => categories.id, { onDelete: "restrict" }),
+      .references(() => categories.categoryId, { onDelete: "restrict" }),
     isActive: boolean("isActive").notNull().default(true),
     primaryImageUrl: text("primaryImageUrl"),
     otherData: jsonb("otherData"),
@@ -118,11 +132,12 @@ export const products = pgTable(
   ]
 );
 
+// color, ram, processor, storage, etc.
 export const attributes = pgTable(
   "attributes",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    attributeName: varchar("attributeName", { length: 100 }).notNull().unique(),
+    name: varchar("attributeName", { length: 100 }).notNull().unique(),
     slug: varchar("slug", { length: 100 }).notNull().unique(),
     description: text("description"),
     createdAt: timestamp("createdAt", { withTimezone: true })
@@ -133,11 +148,12 @@ export const attributes = pgTable(
       .notNull(),
   },
   (table) => [
-    uniqueIndex("attributesNameIdx").on(table.attributeName),
+    uniqueIndex("attributesNameIdx").on(table.name),
     uniqueIndex("attributesSlugIdx").on(table.slug),
   ]
 );
 
+// color - pink, blue, storage - 128gb, 256gb, etc.
 export const attributeValues = pgTable(
   "attributeValues",
   {
@@ -165,47 +181,151 @@ export const attributeValues = pgTable(
   ]
 );
 
-export const productAttributes = pgTable('productAttributes', {
-  productAttributeId: uuid('productAttributeId').defaultRandom().primaryKey(), 
-  productId: uuid('productId').notNull().references(() => products.id, { onDelete: 'cascade' }),
-  attributeId: uuid('attributeId').notNull().references(() => attributes.id, { onDelete: 'cascade' }),
-  createdAt: timestamp('createdAt', { withTimezone: true }).defaultNow().notNull(),
-  displayOrder: integer('displayOrder')
-}, (table) => ({
-  // Unique constraint from image: UNIQUE(productId, attributeId)
-  productAttributeIndex: uniqueIndex('productAttributesProdAttrIdx').on(table.productId, table.attributeId),
-  productIdIndex: index('productAttributesProdIdIdx').on(table.productId),
-  attributeIdIndex: index('productAttributesAttrIdIdx').on(table.attributeId),
-}));
+// mobiles - color, mobile - ram, etc.
+export const categoryAttributes = pgTable(
+  "categoryAttributes",
+  {
+    categoryId: uuid("categoryId").references(() => categories.categoryId),
+    attributeId: uuid("attributeId").references(() => attributes.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.categoryId, table.attributeId] }),
+  })
+);
 
+// iphone 15 - color, ram, storage, iphone 16 - color, ram , storage
+export const productAttributes = pgTable(
+  "productAttributes",
+  {
+    productAttributeId: uuid("productAttributeId").defaultRandom().primaryKey(),
+    productId: uuid("productId")
+      .notNull()
+      .references(() => products.productId, { onDelete: "cascade" }),
+    attributeId: uuid("attributeId")
+      .notNull()
+      .references(() => attributes.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    isRequired: boolean("isRequired").default(false),
+    displayOrder: integer("displayOrder"),
+  },
+  (table) => ({
+    // Unique constraint from image: UNIQUE(productId, attributeId)
+    productAttributeIndex: uniqueIndex("productAttributesProdAttrIdx").on(
+      table.productId,
+      table.attributeId
+    ),
+    productIdIndex: index("productAttributesProdIdIdx").on(table.productId),
+    attributeIdIndex: index("productAttributesAttrIdIdx").on(table.attributeId),
+  })
+);
 
-export const productVariants = pgTable('productVariants', {
-  productVariantId: uuid('productVariantId').defaultRandom().primaryKey(), 
-  productId: uuid('productId').notNull().references(() => products.id, { onDelete: 'cascade' }),
-  sku: varchar('sku', { length: 100 }).unique(), 
-  stockQuantity: integer('stockQuantity').notNull().default(0),
-  price: decimal('price', { precision: 10, scale: 2 }).notNull(), 
-  isDefault: boolean('isDefault').notNull().default(false), 
-  imageUrls: jsonb('imageUrls'), 
-  createdAt: timestamp('createdAt', { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp('updatedAt', { withTimezone: true }).defaultNow().notNull(),
-}, (table) => ({
-  skuIndex: uniqueIndex('productVariantsSkuIdx').on(table.sku),
-  productIdIndex: index('productVariantsProductIdIdx').on(table.productId),
-  // Index to quickly find default variant
-  defaultVariantIndex: index('productVariantsDefaultIdx').on(table.productId, table.isDefault).where(sql`${table.isDefault} = true`),
-}));
+// iphone 15 - color - pink, iphone 15 - color - blue etc.
+export const productAttributeValues = pgTable(
+  "productAttributeValues",
+  {
+    productAttributeValueId: uuid("productAttributeValueId")
+      .defaultRandom()
+      .primaryKey(),
+    productAttributeId: uuid("productAttributeId")
+      .notNull()
+      .references(() => productAttributes.productAttributeId, {
+        onDelete: "cascade",
+      }),
+    attributeValueId: uuid("attributeValueId")
+      .notNull()
+      .references(() => attributeValues.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("productAttrValuesProdAttrValIdx").on(
+      table.productAttributeId,
+      table.attributeValueId
+    ),
+    index("productAttrValuesProdAttrIdIdx").on(table.productAttributeId),
+    index("productAttrValuesAttrValIdIdx").on(table.attributeValueId),
+  ]
+);
 
-export const productVariantAttributeValues = pgTable('productVariantAttributeValues', {
-  // id: uuid('id').defaultRandom().primaryKey(), // Use composite key instead usually
-  // variantAttributeId: uuid('variantAttributeId'), // This field name from image is unclear, using composite PK
-  productVariantId: uuid('productVariantId').notNull().references(() => productVariants.productVariantId, { onDelete: 'cascade' }),
-  attributeValueId: uuid('attributeValueId').notNull().references(() => attributeValues.id, { onDelete: 'cascade' }), // 'productAttributeValueId' in image seems to mean this FK
-  createdAt: timestamp('createdAt', { withTimezone: true }).defaultNow().notNull(),
-}, (table) => ({
-  // Composite primary key ensures a variant only has one value per attribute type (implicitly via attributeValueId)
-  // Also matches UNIQUE constraint from image: UNIQUE(productVariantId, attributeValueId) <- Interpreted from image fields
-  pk: primaryKey({ columns: [table.productVariantId, table.attributeValueId] }),
-  variantIdIndex: index('pvavVariantIdIdx').on(table.productVariantId),
-  valueIdIndex: index('pvavValueIdIdx').on(table.attributeValueId),
-}));
+/**
+ * Represents product variants with specific attribute combinations
+ * @example iPhone 15 Pro Max (Gold, 256GB)
+ */
+export const productVariants = pgTable(
+  "productVariants",
+  {
+    productVariantId: uuid("productVariantId").defaultRandom().primaryKey(),
+    productId: uuid("productId")
+      .notNull()
+      .references(() => products.productId, { onDelete: "cascade" }),
+    sku: varchar("sku", { length: 100 }).unique(),
+    stockQuantity: integer("stockQuantity").notNull().default(0),
+    price: decimal("price", { precision: 10, scale: 2 })
+      .notNull()
+      .$type<number>()
+      .default(0),
+    isDefault: boolean("isDefault").notNull().default(false),
+    isActive: boolean("isActive").notNull().default(true),
+    productMedia: jsonb("productMedia"),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    skuIndex: uniqueIndex("productVariantsSkuIdx").on(table.sku),
+    productIdIndex: index("productVariantsProductIdIdx").on(table.productId),
+    // Index to quickly find default variant
+    defaultVariantIndex: index("productVariantsDefaultIdx")
+      .on(table.productId, table.isDefault)
+      .where(sql`${table.isDefault} = true`),
+  })
+);
+
+// SKU #mshhdh23 - iphone 15 - color pink - storage 256gb - ram 16gb,
+export const productVariantAttributeValues = pgTable(
+  "productVariantAttributeValues",
+  {
+    productVariantId: uuid("productVariantId")
+      .notNull()
+      .references(() => productVariants.productVariantId, {
+        onDelete: "cascade",
+      }),
+    productAttributeValueId: uuid("productAttributeValueId")
+      .notNull()
+      .references(() => productAttributeValues.productAttributeValueId, {
+        onDelete: "cascade",
+      }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    // Composite primary key ensures a variant only has one value per attribute type (implicitly via attributeValueId)
+    primaryKey({
+      columns: [table.productVariantId, table.productAttributeValueId],
+    }),
+    index("pvavVariantIdIdx").on(table.productVariantId),
+    index("pvavValueIdIdx").on(table.productAttributeValueId),
+  ]
+);
+
+export const priceHistory = pgTable("priceHistory", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  variantId: uuid("variantId").references(
+    () => productVariants.productVariantId
+  ),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  salePrice: decimal("salePrice", { precision: 10, scale: 2 }).notNull(),
+  effectiveFrom: timestamp("effectiveFrom", {
+    withTimezone: true,
+  }).defaultNow(),
+  effectiveTo: timestamp("effectiveTo", { withTimezone: true }),
+  // todo userId
+  updatedBy: uuid("updatedBy").references(() => users.userId),
+});
