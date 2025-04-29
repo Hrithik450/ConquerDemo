@@ -20,12 +20,15 @@ export const users = pgTable(
   {
     userId: uuid("userId").defaultRandom().primaryKey(),
   },
-  (table) => ({
-    
-  })
+  (table) => ({})
 );
 
-// example: mobiles, laptops etc.
+/**
+ * Represents product categories in a hierarchical structure
+ * @example 
+ * - Mobiles
+ * - Laptops
+ */
 export const categories = pgTable(
   "categories",
   {
@@ -52,7 +55,10 @@ export const categories = pgTable(
   }
 );
 
-// apple, samsung, etc,
+/**
+ * Represents manufacturers or product brands
+ * @example Apple, Samsung, Nike
+ */
 export const brands = pgTable(
   "brands",
   {
@@ -76,7 +82,13 @@ export const brands = pgTable(
   }
 );
 
-// iphones, apple pencil, spen, etc.
+/**
+ * Junction table representing which brands operate in which categories
+ * @example 
+ * - Apple → Mobiles
+ * - Apple → Laptops
+ * - Nike → Shoes
+ */
 export const brandCategories = pgTable(
   "brandCategories",
   {
@@ -98,7 +110,13 @@ export const brandCategories = pgTable(
   }
 );
 
-// iphone 15, iphone 16, macbook m1, etc.
+/**
+ * Represents base product models in the catalog
+ * @example 
+ * - iPhone 15
+ * - MacBook Pro M3
+ * - Air Jordan 1
+ */
 export const products = pgTable(
   "products",
   {
@@ -132,7 +150,14 @@ export const products = pgTable(
   ]
 );
 
-// color, ram, processor, storage, etc.
+/**
+ * Defines types of attributes products can have
+ * @example 
+ * - Color
+ * - Storage Capacity
+ * - Size
+ * - Material
+ */
 export const attributes = pgTable(
   "attributes",
   {
@@ -153,7 +178,13 @@ export const attributes = pgTable(
   ]
 );
 
-// color - pink, blue, storage - 128gb, 256gb, etc.
+/**
+ * Possible values for each attribute type
+ * @example 
+ * - Color → ["Black", "White", "Blue"]
+ * - Storage → ["128GB", "256GB", "512GB"]
+ * - Size → ["S", "M", "L"]
+ */
 export const attributeValues = pgTable(
   "attributeValues",
   {
@@ -181,7 +212,12 @@ export const attributeValues = pgTable(
   ]
 );
 
-// mobiles - color, mobile - ram, etc.
+/**
+ * Associates attributes with specific categories
+ * @example 
+ * - Mobiles: [Color, Storage, RAM]
+ * - Shirts: [Color, Size, Material]
+ */
 export const categoryAttributes = pgTable(
   "categoryAttributes",
   {
@@ -193,7 +229,12 @@ export const categoryAttributes = pgTable(
   })
 );
 
-// iphone 15 - color, ram, storage, iphone 16 - color, ram , storage
+/**
+ * Associates attributes with specific products
+ * @example 
+ * - iPhone 15: [Color, Storage, RAM]
+ * - T-Shirt: [Color, Size, Material]
+ */
 export const productAttributes = pgTable(
   "productAttributes",
   {
@@ -221,7 +262,12 @@ export const productAttributes = pgTable(
   })
 );
 
-// iphone 15 - color - pink, iphone 15 - color - blue etc.
+/**
+ * Defines which attribute values are available for each product attribute
+ * @example 
+ * - iPhone 15 Color: [Black, White, Blue]
+ * - iPhone 15 Storage: [128GB, 256GB, 512GB]
+ */
 export const productAttributeValues = pgTable(
   "productAttributeValues",
   {
@@ -251,8 +297,11 @@ export const productAttributeValues = pgTable(
 );
 
 /**
- * Represents product variants with specific attribute combinations
- * @example iPhone 15 Pro Max (Gold, 256GB)
+ * Represents specific product variants with unique combinations of attributes
+ * @example 
+ * - iPhone 15 Pro Max (Gold, 256GB)
+ * - MacBook Pro M3 (Space Gray, 16GB RAM, 1TB SSD)
+ * - T-Shirt (Black, XL)
  */
 export const productVariants = pgTable(
   "productVariants",
@@ -270,6 +319,7 @@ export const productVariants = pgTable(
     isDefault: boolean("isDefault").notNull().default(false),
     isActive: boolean("isActive").notNull().default(true),
     productMedia: jsonb("productMedia"),
+    otherData: jsonb("otherData"),
     createdAt: timestamp("createdAt", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -287,7 +337,12 @@ export const productVariants = pgTable(
   })
 );
 
-// SKU #mshhdh23 - iphone 15 - color pink - storage 256gb - ram 16gb,
+/**
+ * Links variants to their specific attribute value combinations
+ * @example 
+ * - Variant A: [Color=Black, Storage=256GB]
+ * - Variant B: [Color=White, Storage=256GB]
+ */
 export const productVariantAttributeValues = pgTable(
   "productVariantAttributeValues",
   {
@@ -315,6 +370,12 @@ export const productVariantAttributeValues = pgTable(
   ]
 );
 
+/**
+ * Tracks historical price changes for product variants
+ * @example 
+ * - Variant A was $999 from Jan-Mar 2023
+ * - Variant A changed to $899 from Apr 2023 onward
+ */
 export const priceHistory = pgTable("priceHistory", {
   id: uuid("id").defaultRandom().primaryKey(),
   variantId: uuid("variantId").references(
@@ -326,6 +387,8 @@ export const priceHistory = pgTable("priceHistory", {
     withTimezone: true,
   }).defaultNow(),
   effectiveTo: timestamp("effectiveTo", { withTimezone: true }),
+  history: jsonb("history"),
   // todo userId
   updatedBy: uuid("updatedBy").references(() => users.userId),
 });
+
