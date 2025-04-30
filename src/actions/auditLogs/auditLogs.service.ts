@@ -1,13 +1,9 @@
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 import { AuditLogsModel } from "./auditLogs.model";
 import { auditLogSchema } from "./auditLogs.types";
 import type { AuditLogResponse, AuditLogsResponse } from "./auditLogs.types";
 
-//fix it later with next auth or something
-function auth(): { userId: any; orgId: any } {
-  throw new Error("Function not implemented.");
-}
 
 export async function createAuditLog(data: unknown): Promise<AuditLogResponse> {
   try {
