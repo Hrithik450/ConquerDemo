@@ -19,13 +19,122 @@ export const users = pgTable(
   "users",
   {
     userId: uuid("userId").defaultRandom().primaryKey(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    firstName: varchar("firstName", { length: 100 }),
+    lastName: varchar("lastName", { length: 100 }),
+    phone: varchar("phone", { length: 20 }),
+    role: varchar("role", { length: 20 }).notNull().default("employee"),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
-  (table) => ({})
+  (table) => ({
+    emailIndex: uniqueIndex("usersEmailIdx").on(table.email),
+    roleIndex: index("usersRoleIdx").on(table.role),
+  })
+);
+
+/**
+ * Organizations that have partnerships with us
+ */
+export const organizations = pgTable(
+  "organizations",
+  {
+    organizationId: uuid("organizationId").defaultRandom().primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    taxId: varchar("taxId", { length: 50 }).unique(),
+    email: varchar("email", { length: 255 }).notNull(),
+    phone: varchar("phone", { length: 20 }),
+    address: text("address"),
+    isActive: boolean("isActive").notNull().default(true),
+    contractStartDate: timestamp("contractStartDate", { withTimezone: true }),
+    contractEndDate: timestamp("contractEndDate", { withTimezone: true }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    nameIndex: uniqueIndex("organizationsNameIdx").on(table.name),
+    activeIndex: index("organizationsActiveIdx").on(table.isActive),
+  })
+);
+
+/**
+ * Employees of partner organizations who can make purchases
+ */
+export const organizationEmployees = pgTable(
+  "organizationEmployees",
+  {
+    employeeId: uuid("employeeId").defaultRandom().primaryKey(),
+    organizationId: uuid("organizationId")
+      .notNull()
+      .references(() => organizations.organizationId),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.userId),
+    employeeNumber: varchar("employeeNumber", { length: 50 }),
+    department: varchar("department", { length: 100 }),
+    position: varchar("position", { length: 100 }),
+    isActive: boolean("isActive").notNull().default(true),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    orgUserIndex: uniqueIndex("orgEmployeesOrgUserIdx").on(
+      table.organizationId,
+      table.userId
+    ),
+    orgIndex: index("orgEmployeesOrgIdx").on(table.organizationId),
+    userIndex: index("orgEmployeesUserIdx").on(table.userId),
+  })
+);
+
+/**
+ * Contracts between our company and partner organizations
+ */
+export const contracts = pgTable(
+  "contracts",
+  {
+    contractId: uuid("contractId").defaultRandom().primaryKey(),
+    organizationId: uuid("organizationId")
+      .notNull()
+      .references(() => organizations.organizationId),
+    contractNumber: varchar("contractNumber", { length: 50 }),
+    startDate: timestamp("startDate", { withTimezone: true }).notNull(),
+    endDate: timestamp("endDate", { withTimezone: true }).notNull(),
+    isActive: boolean("isActive").notNull().default(true),
+    terms: text("terms"),
+    notes: text("notes"),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    orgIndex: index("contractsOrgIdx").on(table.organizationId),
+    activeIndex: index("contractsActiveIdx").on(table.isActive),
+    dateRangeIndex: index("contractsDateRangeIdx").on(
+      table.startDate,
+      table.endDate
+    ),
+  })
 );
 
 /**
  * Represents product categories in a hierarchical structure
- * @example 
+ * @example
  * - Mobiles
  * - Laptops
  */
@@ -84,7 +193,7 @@ export const brands = pgTable(
 
 /**
  * Junction table representing which brands operate in which categories
- * @example 
+ * @example
  * - Apple → Mobiles
  * - Apple → Laptops
  * - Nike → Shoes
@@ -112,7 +221,7 @@ export const brandCategories = pgTable(
 
 /**
  * Represents base product models in the catalog
- * @example 
+ * @example
  * - iPhone 15
  * - MacBook Pro M3
  * - Air Jordan 1
@@ -152,7 +261,7 @@ export const products = pgTable(
 
 /**
  * Defines types of attributes products can have
- * @example 
+ * @example
  * - Color
  * - Storage Capacity
  * - Size
@@ -180,7 +289,7 @@ export const attributes = pgTable(
 
 /**
  * Possible values for each attribute type
- * @example 
+ * @example
  * - Color → ["Black", "White", "Blue"]
  * - Storage → ["128GB", "256GB", "512GB"]
  * - Size → ["S", "M", "L"]
@@ -214,7 +323,7 @@ export const attributeValues = pgTable(
 
 /**
  * Associates attributes with specific categories
- * @example 
+ * @example
  * - Mobiles: [Color, Storage, RAM]
  * - Shirts: [Color, Size, Material]
  */
@@ -231,7 +340,7 @@ export const categoryAttributes = pgTable(
 
 /**
  * Associates attributes with specific products
- * @example 
+ * @example
  * - iPhone 15: [Color, Storage, RAM]
  * - T-Shirt: [Color, Size, Material]
  */
@@ -264,7 +373,7 @@ export const productAttributes = pgTable(
 
 /**
  * Defines which attribute values are available for each product attribute
- * @example 
+ * @example
  * - iPhone 15 Color: [Black, White, Blue]
  * - iPhone 15 Storage: [128GB, 256GB, 512GB]
  */
@@ -297,8 +406,171 @@ export const productAttributeValues = pgTable(
 );
 
 /**
+ * Contract-specific discounts for product categories
+ */
+export const contractCategoryDiscounts = pgTable(
+  "contractCategoryDiscounts",
+  {
+    discountId: uuid("discountId").defaultRandom().primaryKey(),
+    contractId: uuid("contractId")
+      .notNull()
+      .references(() => contracts.contractId),
+    categoryId: uuid("categoryId")
+      .notNull()
+      .references(() => categories.categoryId),
+    discountType: varchar("discountType", { length: 20 }).notNull(), // 'percentage' or 'fixed'
+    discountValue: decimal("discountValue", {
+      precision: 5,
+      scale: 2,
+    }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    contractCategoryIndex: uniqueIndex("contractCategoryDiscountsUniqueIdx").on(
+      table.contractId,
+      table.categoryId
+    ),
+    contractIndex: index("contractCategoryDiscountsContractIdx").on(
+      table.contractId
+    ),
+    categoryIndex: index("contractCategoryDiscountsCategoryIdx").on(
+      table.categoryId
+    ),
+  })
+);
+
+/**
+ * Contract-specific discounts for brands
+ */
+export const contractBrandDiscounts = pgTable(
+  "contractBrandDiscounts",
+  {
+    discountId: uuid("discountId").defaultRandom().primaryKey(),
+    contractId: uuid("contractId")
+      .notNull()
+      .references(() => contracts.contractId),
+    brandId: uuid("brandId")
+      .notNull()
+      .references(() => brands.brandId),
+    discountType: varchar("discountType", { length: 20 }).notNull(), // 'percentage' or 'fixed'
+    discountValue: decimal("discountValue", {
+      precision: 5,
+      scale: 2,
+    }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    contractBrandIndex: uniqueIndex("contractBrandDiscountsUniqueIdx").on(
+      table.contractId,
+      table.brandId
+    ),
+    contractIndex: index("contractBrandDiscountsContractIdx").on(
+      table.contractId
+    ),
+    brandIndex: index("contractBrandDiscountsBrandIdx").on(table.brandId),
+  })
+);
+
+/**
+ * Contract-specific discounts for individual products
+ */
+export const contractProductDiscounts = pgTable(
+  "contractProductDiscounts",
+  {
+    discountId: uuid("discountId").defaultRandom().primaryKey(),
+    contractId: uuid("contractId")
+      .notNull()
+      .references(() => contracts.contractId),
+    productId: uuid("productId")
+      .notNull()
+      .references(() => products.productId),
+    discountType: varchar("discountType", { length: 20 }).notNull(), // 'percentage' or 'fixed'
+    discountValue: decimal("discountValue", {
+      precision: 5,
+      scale: 2,
+    }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    contractProductIndex: uniqueIndex("contractProductDiscountsUniqueIdx").on(
+      table.contractId,
+      table.productId
+    ),
+    contractIndex: index("contractProductDiscountsContractIdx").on(
+      table.contractId
+    ),
+    productIndex: index("contractProductDiscountsProductIdx").on(
+      table.productId
+    ),
+  })
+);
+
+/**
+ * Contract restrictions on product-specific attribute values
+ */
+export const contractProductAttributeValueRestrictions = pgTable(
+  "contractProductAttributeValueRestrictions",
+  {
+    restrictionId: uuid("restrictionId").defaultRandom().primaryKey(),
+    contractId: uuid("contractId")
+      .notNull()
+      .references(() => contracts.contractId),
+    productId: uuid("productId")
+      .notNull()
+      .references(() => products.productId),
+    attributeId: uuid("attributeId")
+      .notNull()
+      .references(() => attributes.id),
+    attributeValueId: uuid("attributeValueId")
+      .notNull()
+      .references(() => attributeValues.id),
+    isAllowed: boolean("isAllowed").notNull().default(true),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    contractProductAttributeValueIndex: uniqueIndex(
+      "contractProdAttrValRestrictionUniqueIdx"
+    ).on(
+      table.contractId,
+      table.productId,
+      table.attributeId,
+      table.attributeValueId
+    ),
+    contractIndex: index("contractProdAttrValRestrictionContractIdx").on(
+      table.contractId
+    ),
+    productIndex: index("contractProdAttrValRestrictionProductIdx").on(
+      table.productId
+    ),
+    attributeIndex: index("contractProdAttrValRestrictionAttrIdx").on(
+      table.attributeId
+    ),
+    valueIndex: index("contractProdAttrValRestrictionValueIdx").on(
+      table.attributeValueId
+    ),
+  })
+);
+
+/**
  * Represents specific product variants with unique combinations of attributes
- * @example 
+ * @example
  * - iPhone 15 Pro Max (Gold, 256GB)
  * - MacBook Pro M3 (Space Gray, 16GB RAM, 1TB SSD)
  * - T-Shirt (Black, XL)
@@ -339,7 +611,7 @@ export const productVariants = pgTable(
 
 /**
  * Links variants to their specific attribute value combinations
- * @example 
+ * @example
  * - Variant A: [Color=Black, Storage=256GB]
  * - Variant B: [Color=White, Storage=256GB]
  */
@@ -372,7 +644,7 @@ export const productVariantAttributeValues = pgTable(
 
 /**
  * Tracks historical price changes for product variants
- * @example 
+ * @example
  * - Variant A was $999 from Jan-Mar 2023
  * - Variant A changed to $899 from Apr 2023 onward
  */
@@ -392,3 +664,188 @@ export const priceHistory = pgTable("priceHistory", {
   updatedBy: uuid("updatedBy").references(() => users.userId),
 });
 
+/**
+ * Customer shopping carts
+ */
+export const carts = pgTable(
+  "carts",
+  {
+    cartId: uuid("cartId").defaultRandom().primaryKey(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.userId),
+    organizationId: uuid("organizationId")
+      .notNull()
+      .references(() => organizations.organizationId),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userIndex: index("cartsUserIdx").on(table.userId),
+    orgIndex: index("cartsOrgIdx").on(table.organizationId),
+  })
+);
+
+/**
+ * Items in shopping carts
+ */
+export const cartItems = pgTable(
+  "cartItems",
+  {
+    cartItemId: uuid("cartItemId").defaultRandom().primaryKey(),
+    cartId: uuid("cartId")
+      .notNull()
+      .references(() => carts.cartId),
+    productVariantId: uuid("productVariantId")
+      .notNull()
+      .references(() => productVariants.productVariantId),
+    quantity: integer("quantity").notNull().default(1),
+    priceAtAddition: decimal("priceAtAddition", {
+      precision: 10,
+      scale: 2,
+    }).notNull(),
+    appliedDiscount: decimal("appliedDiscount", { precision: 10, scale: 2 })
+      .$type<number>()
+      .default(0),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    cartIndex: index("cartItemsCartIdx").on(table.cartId),
+    variantIndex: index("cartItemsVariantIdx").on(table.productVariantId),
+  })
+);
+
+/**
+ * Customer orders
+ */
+export const orders = pgTable(
+  "orders",
+  {
+    orderId: uuid("orderId").defaultRandom().primaryKey(),
+    orderNumber: varchar("orderNumber", { length: 50 }).notNull().unique(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.userId),
+    organizationId: uuid("organizationId")
+      .notNull()
+      .references(() => organizations.organizationId),
+    contractId: uuid("contractId")
+      .notNull()
+      .references(() => contracts.contractId),
+    totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }).notNull(),
+    totalDiscount: decimal("totalDiscount", { precision: 10, scale: 2 })
+      .notNull()
+      .$type<number>()
+      .default(0),
+    status: varchar("status", { length: 20 }).notNull().default("pending"), // pending, processing, shipped, delivered, cancelled
+    shippingAddress: text("shippingAddress"),
+    billingAddress: text("billingAddress"),
+    notes: text("notes"),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userIndex: index("ordersUserIdx").on(table.userId),
+    orgIndex: index("ordersOrgIdx").on(table.organizationId),
+    contractIndex: index("ordersContractIdx").on(table.contractId),
+    statusIndex: index("ordersStatusIdx").on(table.status),
+    dateIndex: index("ordersDateIdx").on(table.createdAt),
+  })
+);
+
+/**
+ * Order items
+ */
+export const orderItems = pgTable(
+  "orderItems",
+  {
+    orderItemId: uuid("orderItemId").defaultRandom().primaryKey(),
+    orderId: uuid("orderId")
+      .notNull()
+      .references(() => orders.orderId),
+    productVariantId: uuid("productVariantId")
+      .notNull()
+      .references(() => productVariants.productVariantId),
+    quantity: integer("quantity").notNull(),
+    price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+    discount: decimal("discount", { precision: 10, scale: 2 })
+      .notNull()
+      .$type<number>()
+      .default(0),
+    totalPrice: decimal("totalPrice", { precision: 10, scale: 2 }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    orderIndex: index("orderItemsOrderIdx").on(table.orderId),
+    variantIndex: index("orderItemsVariantIdx").on(table.productVariantId),
+  })
+);
+
+/**
+ * Order status history
+ */
+export const orderStatusHistory = pgTable(
+  "orderStatusHistory",
+  {
+    historyId: uuid("historyId").defaultRandom().primaryKey(),
+    orderId: uuid("orderId")
+      .notNull()
+      .references(() => orders.orderId),
+    status: varchar("status", { length: 20 }).notNull(),
+    changedBy: uuid("changedBy").references(() => users.userId),
+    notes: text("notes"),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    orderIndex: index("orderStatusHistoryOrderIdx").on(table.orderId),
+    statusIndex: index("orderStatusHistoryStatusIdx").on(table.status),
+    dateIndex: index("orderStatusHistoryDateIdx").on(table.createdAt),
+  })
+);
+
+/**
+ * Admin audit logs
+ */
+export const auditLogs = pgTable(
+  "auditLogs",
+  {
+    logId: uuid("logId").defaultRandom().primaryKey(),
+    action: varchar("action", { length: 50 }).notNull(), // create, update, delete
+    entityType: varchar("entityType", { length: 50 }).notNull(), // product, order, etc.
+    entityId: uuid("entityId"),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.userId),
+    oldValues: jsonb("oldValues"),
+    newValues: jsonb("newValues"),
+    ipAddress: varchar("ipAddress", { length: 50 }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userIndex: index("auditLogsUserIdx").on(table.userId),
+    entityIndex: index("auditLogsEntityIdx").on(
+      table.entityType,
+      table.entityId
+    ),
+    dateIndex: index("auditLogsDateIdx").on(table.createdAt),
+  })
+);
