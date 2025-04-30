@@ -1,36 +1,55 @@
 import { CategoriesModel } from "./categories.model";
-import type { NewCategory, Category, CategoryResponse, CategoriesResponse } from "./categories.types";
+import { categorySchema } from "./categories.types";
+import type { Category, CategoryResponse, CategoriesResponse } from "./categories.types";
 import { slugify } from "@/lib/utils";
 
 export class CategoriesService {
-  static async createCategory(data: NewCategory): Promise<CategoryResponse> {
-    // Generate slug from name if not provided
-    if (!data.slug) {
-      data.slug = slugify(data.name);
-    }
-
-    // Check if slug already exists
-    const existingCategory = await CategoriesModel.getCategoryBySlug(data.slug);
-    if (existingCategory) {
-      return { success: false, error: "A category with this slug already exists" };
-    }
-
-    const category = await CategoriesModel.createCategory(data);
-    return { success: true, data: category };
-  }
-
-  static async getCategoryById(categoryId: string): Promise<CategoryResponse> {
+  static async createCategory(data: Partial<Category>): Promise<CategoryResponse> {
     try {
-      const category = await CategoriesModel.getCategoryById(categoryId);
-
-      if (!category) {
-        return { success: false, error: "Category not found" };
+      // Validate input data
+      const validatedData = categorySchema.parse(data);
+      
+      // Check if category already exists
+      const existingCategory = await CategoriesModel.getCategoryBySlug(validatedData.slug);
+      if (existingCategory) {
+        return {
+          success: false,
+          error: "Category with this slug already exists",
+        };
       }
 
-      return { success: true, data: category };
+      // Create new category
+      const category = await CategoriesModel.createCategory(validatedData);
+      return {
+        success: true,
+        data: category,
+      };
     } catch (error) {
-      console.error("Error fetching category:", error);
-      return { success: false, error: "Failed to fetch category" };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to create category",
+      };
+    }
+  }
+
+  static async getCategoryById(id: string): Promise<CategoryResponse> {
+    try {
+      const category = await CategoriesModel.getCategoryById(id);
+      if (!category) {
+        return {
+          success: false,
+          error: "Category not found",
+        };
+      }
+      return {
+        success: true,
+        data: category,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to get category",
+      };
     }
   }
 
@@ -49,56 +68,62 @@ export class CategoriesService {
     }
   }
 
-  static async updateCategory(
-    categoryId: string,
-    data: Partial<NewCategory>
-  ): Promise<CategoryResponse> {
-    // If name is being updated, update slug as well
-    if (data.name && !data.slug) {
-      data.slug = slugify(data.name);
-    }
-
-    // Check if new slug already exists
-    if (data.slug) {
-      const existingCategory = await CategoriesModel.getCategoryBySlug(data.slug);
-      if (existingCategory && existingCategory.categoryId !== categoryId) {
-        return { success: false, error: "A category with this slug already exists" };
+  static async updateCategory(id: string, data: Partial<Category>): Promise<CategoryResponse> {
+    try {
+      // Validate input data
+      const validatedData = categorySchema.partial().parse(data);
+      
+      const category = await CategoriesModel.updateCategory(id, validatedData);
+      if (!category) {
+        return {
+          success: false,
+          error: "Category not found",
+        };
       }
+      return {
+        success: true,
+        data: category,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to update category",
+      };
     }
-
-    const category = await CategoriesModel.updateCategory(categoryId, data);
-
-    if (!category) {
-      return { success: false, error: "Category not found" };
-    }
-
-    return { success: true, data: category };
   }
 
-  static async deleteCategory(categoryId: string): Promise<CategoryResponse> {
+  static async deleteCategory(id: string): Promise<CategoryResponse> {
     try {
-      const success = await CategoriesModel.deleteCategory(categoryId);
-
+      const success = await CategoriesModel.deleteCategory(id);
       if (!success) {
-        return { success: false, error: "Category not found" };
+        return {
+          success: false,
+          error: "Category not found",
+        };
       }
-
-      return { success: true, message: "Category deleted successfully" };
+      return {
+        success: true,
+      };
     } catch (error) {
-      console.error("Error deleting category:", error);
-      return { success: false, error: "Failed to delete category" };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to delete category",
+      };
     }
   }
 
-  static async listCategories(activeOnly: boolean = false): Promise<CategoriesResponse> {
+  static async listCategories(): Promise<CategoriesResponse> {
     try {
-      const categories = activeOnly
-        ? await CategoriesModel.listActiveCategories()
-        : await CategoriesModel.listCategories();
-      return { success: true, data: categories };
+      const categories = await CategoriesModel.listCategories();
+      return {
+        success: true,
+        data: categories,
+      };
     } catch (error) {
-      console.error("Error listing categories:", error);
-      return { success: false, error: "Failed to list categories" };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to list categories",
+      };
     }
   }
 

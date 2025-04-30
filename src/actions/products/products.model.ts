@@ -9,11 +9,11 @@ export class ProductsModel {
     return product;
   }
 
-  static async getProductById(productId: string): Promise<Product | null> {
+  static async getProductById(id: string): Promise<Product | null> {
     const [product] = await db
       .select()
       .from(products)
-      .where(eq(products.productId, productId));
+      .where(eq(products.productId, id));
     return product || null;
   }
 
@@ -25,24 +25,34 @@ export class ProductsModel {
     return product || null;
   }
 
-  static async updateProduct(
-    productId: string,
-    data: Partial<NewProduct>
-  ): Promise<Product | null> {
+  static async getProductsByBrandId(brandId: string): Promise<Product[]> {
+    return await db
+      .select()
+      .from(products)
+      .where(eq(products.brandId, brandId));
+  }
+
+  static async getProductsByCategoryId(categoryId: string): Promise<Product[]> {
+    return await db
+      .select()
+      .from(products)
+      .where(eq(products.categoryId, categoryId));
+  }
+
+  static async updateProduct(id: string, data: Partial<NewProduct>): Promise<Product | null> {
     const [product] = await db
       .update(products)
-      .set(data)
-      .where(eq(products.productId, productId))
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(products.productId, id))
       .returning();
     return product || null;
   }
 
-  static async deleteProduct(productId: string): Promise<boolean> {
+  static async deleteProduct(id: string): Promise<boolean> {
     const result = await db
       .delete(products)
-      .where(eq(products.productId, productId))
-      .returning();
-    return result.length > 0;
+      .where(eq(products.productId, id));
+    return result.count > 0;
   }
 
   static async listProducts(): Promise<Product[]> {

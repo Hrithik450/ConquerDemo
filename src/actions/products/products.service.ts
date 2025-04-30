@@ -1,29 +1,145 @@
 import { ProductsModel } from "./products.model";
-import type { NewProduct, Product } from "./products.types";
+import { productSchema } from "./products.types";
+import type { Product, ProductResponse, ProductsResponse } from "./products.types";
 import { slugify } from "@/lib/utils";
 
 export class ProductsService {
-  static async createProduct(data: NewProduct): Promise<Product> {
-    // Generate slug from name if not provided
-    if (!data.slug) {
-      data.slug = slugify(data.name);
-    }
+  static async createProduct(data: Partial<Product>): Promise<ProductResponse> {
+    try {
+      // Validate input data
+      const validatedData = productSchema.parse(data);
+      
+      // Check if product already exists
+      const existingProduct = await ProductsModel.getProductBySlug(validatedData.slug);
+      if (existingProduct) {
+        return {
+          success: false,
+          error: "Product with this slug already exists",
+        };
+      }
 
-    // Check if slug already exists
-    const existingProduct = await ProductsModel.getProductBySlug(data.slug);
-    if (existingProduct) {
-      throw new Error("A product with this slug already exists");
+      // Create new product
+      const product = await ProductsModel.createProduct(validatedData);
+      return {
+        success: true,
+        data: product,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to create product",
+      };
     }
-
-    return await ProductsModel.createProduct(data);
   }
 
-  static async getProductById(productId: string): Promise<Product> {
-    const product = await ProductsModel.getProductById(productId);
-    if (!product) {
-      throw new Error("Product not found");
+  static async getProductById(id: string): Promise<ProductResponse> {
+    try {
+      const product = await ProductsModel.getProductById(id);
+      if (!product) {
+        return {
+          success: false,
+          error: "Product not found",
+        };
+      }
+      return {
+        success: true,
+        data: product,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to get product",
+      };
     }
-    return product;
+  }
+
+  static async getProductsByBrandId(brandId: string): Promise<ProductsResponse> {
+    try {
+      const products = await ProductsModel.getProductsByBrandId(brandId);
+      return {
+        success: true,
+        data: products,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to get products for brand",
+      };
+    }
+  }
+
+  static async getProductsByCategoryId(categoryId: string): Promise<ProductsResponse> {
+    try {
+      const products = await ProductsModel.getProductsByCategoryId(categoryId);
+      return {
+        success: true,
+        data: products,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to get products for category",
+      };
+    }
+  }
+
+  static async updateProduct(id: string, data: Partial<Product>): Promise<ProductResponse> {
+    try {
+      // Validate input data
+      const validatedData = productSchema.partial().parse(data);
+      
+      const product = await ProductsModel.updateProduct(id, validatedData);
+      if (!product) {
+        return {
+          success: false,
+          error: "Product not found",
+        };
+      }
+      return {
+        success: true,
+        data: product,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to update product",
+      };
+    }
+  }
+
+  static async deleteProduct(id: string): Promise<ProductResponse> {
+    try {
+      const success = await ProductsModel.deleteProduct(id);
+      if (!success) {
+        return {
+          success: false,
+          error: "Product not found",
+        };
+      }
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to delete product",
+      };
+    }
+  }
+
+  static async listProducts(): Promise<ProductsResponse> {
+    try {
+      const products = await ProductsModel.listProducts();
+      return {
+        success: true,
+        data: products,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to list products",
+      };
+    }
   }
 
   static async getProductBySlug(slug: string): Promise<Product> {
@@ -32,43 +148,6 @@ export class ProductsService {
       throw new Error("Product not found");
     }
     return product;
-  }
-
-  static async updateProduct(
-    productId: string,
-    data: Partial<NewProduct>
-  ): Promise<Product> {
-    // If name is being updated, update slug as well
-    if (data.name && !data.slug) {
-      data.slug = slugify(data.name);
-    }
-
-    // Check if new slug already exists
-    if (data.slug) {
-      const existingProduct = await ProductsModel.getProductBySlug(data.slug);
-      if (existingProduct && existingProduct.productId !== productId) {
-        throw new Error("A product with this slug already exists");
-      }
-    }
-
-    const product = await ProductsModel.updateProduct(productId, data);
-    if (!product) {
-      throw new Error("Product not found");
-    }
-    return product;
-  }
-
-  static async deleteProduct(productId: string): Promise<void> {
-    const success = await ProductsModel.deleteProduct(productId);
-    if (!success) {
-      throw new Error("Product not found");
-    }
-  }
-
-  static async listProducts(activeOnly: boolean = false): Promise<Product[]> {
-    return activeOnly
-      ? await ProductsModel.listActiveProducts()
-      : await ProductsModel.listProducts();
   }
 
   static async searchProducts(

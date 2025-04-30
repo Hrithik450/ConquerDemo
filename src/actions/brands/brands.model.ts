@@ -9,11 +9,11 @@ export class BrandsModel {
     return brand;
   }
 
-  static async getBrandById(brandId: string): Promise<Brand | null> {
+  static async getBrandById(id: string): Promise<Brand | null> {
     const [brand] = await db
       .select()
       .from(brands)
-      .where(eq(brands.brandId, brandId));
+      .where(eq(brands.brandId, id));
     return brand || null;
   }
 
@@ -25,21 +25,20 @@ export class BrandsModel {
     return brand || null;
   }
 
-  static async updateBrand(brandId: string, data: Partial<NewBrand>): Promise<Brand | null> {
+  static async updateBrand(id: string, data: Partial<NewBrand>): Promise<Brand | null> {
     const [brand] = await db
       .update(brands)
-      .set(data)
-      .where(eq(brands.brandId, brandId))
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(brands.brandId, id))
       .returning();
     return brand || null;
   }
 
-  static async deleteBrand(brandId: string): Promise<boolean> {
+  static async deleteBrand(id: string): Promise<boolean> {
     const result = await db
       .delete(brands)
-      .where(eq(brands.brandId, brandId))
-      .returning();
-    return result.length > 0;
+      .where(eq(brands.brandId, id));
+    return result.count > 0;
   }
 
   static async listBrands(): Promise<Brand[]> {

@@ -1,36 +1,55 @@
 import { BrandsModel } from "./brands.model";
-import type { NewBrand, Brand, BrandResponse, BrandsResponse } from "./brands.types";
+import { brandSchema } from "./brands.types";
+import type { Brand, BrandResponse, BrandsResponse } from "./brands.types";
 import { slugify } from "@/lib/utils";
 
 export class BrandsService {
-  static async createBrand(data: NewBrand): Promise<BrandResponse> {
-    // Generate slug from name if not provided
-    if (!data.slug) {
-      data.slug = slugify(data.name);
-    }
-
-    // Check if slug already exists
-    const existingBrand = await BrandsModel.getBrandBySlug(data.slug);
-    if (existingBrand) {
-      return { success: false, error: "A brand with this slug already exists" };
-    }
-
-    const brand = await BrandsModel.createBrand(data);
-    return { success: true, data: brand };
-  }
-
-  static async getBrandById(brandId: string): Promise<BrandResponse> {
+  static async createBrand(data: Partial<Brand>): Promise<BrandResponse> {
     try {
-      const brand = await BrandsModel.getBrandById(brandId);
-
-      if (!brand) {
-        return { success: false, error: "Brand not found" };
+      // Validate input data
+      const validatedData = brandSchema.parse(data);
+      
+      // Check if brand already exists
+      const existingBrand = await BrandsModel.getBrandBySlug(validatedData.slug);
+      if (existingBrand) {
+        return {
+          success: false,
+          error: "Brand with this slug already exists",
+        };
       }
 
-      return { success: true, data: brand };
+      // Create new brand
+      const brand = await BrandsModel.createBrand(validatedData);
+      return {
+        success: true,
+        data: brand,
+      };
     } catch (error) {
-      console.error("Error fetching brand:", error);
-      return { success: false, error: "Failed to fetch brand" };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to create brand",
+      };
+    }
+  }
+
+  static async getBrandById(id: string): Promise<BrandResponse> {
+    try {
+      const brand = await BrandsModel.getBrandById(id);
+      if (!brand) {
+        return {
+          success: false,
+          error: "Brand not found",
+        };
+      }
+      return {
+        success: true,
+        data: brand,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to get brand",
+      };
     }
   }
 
@@ -49,54 +68,62 @@ export class BrandsService {
     }
   }
 
-  static async updateBrand(
-    brandId: string,
-    data: Partial<NewBrand>
-  ): Promise<BrandResponse> {
-    // If name is being updated, update slug as well
-    if (data.name && !data.slug) {
-      data.slug = slugify(data.name);
-    }
-
-    // Check if new slug already exists
-    if (data.slug) {
-      const existingBrand = await BrandsModel.getBrandBySlug(data.slug);
-      if (existingBrand && existingBrand.brandId !== brandId) {
-        return { success: false, error: "A brand with this slug already exists" };
+  static async updateBrand(id: string, data: Partial<Brand>): Promise<BrandResponse> {
+    try {
+      // Validate input data
+      const validatedData = brandSchema.partial().parse(data);
+      
+      const brand = await BrandsModel.updateBrand(id, validatedData);
+      if (!brand) {
+        return {
+          success: false,
+          error: "Brand not found",
+        };
       }
+      return {
+        success: true,
+        data: brand,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to update brand",
+      };
     }
-
-    const brand = await BrandsModel.updateBrand(brandId, data);
-
-    if (!brand) {
-      return { success: false, error: "Brand not found" };
-    }
-
-    return { success: true, data: brand };
   }
 
-  static async deleteBrand(brandId: string): Promise<BrandResponse> {
+  static async deleteBrand(id: string): Promise<BrandResponse> {
     try {
-      const success = await BrandsModel.deleteBrand(brandId);
-
+      const success = await BrandsModel.deleteBrand(id);
       if (!success) {
-        return { success: false, error: "Brand not found" };
+        return {
+          success: false,
+          error: "Brand not found",
+        };
       }
-
-      return { success: true, message: "Brand deleted successfully" };
+      return {
+        success: true,
+      };
     } catch (error) {
-      console.error("Error deleting brand:", error);
-      return { success: false, error: "Failed to delete brand" };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to delete brand",
+      };
     }
   }
 
   static async listBrands(): Promise<BrandsResponse> {
     try {
       const brands = await BrandsModel.listBrands();
-      return { success: true, data: brands };
+      return {
+        success: true,
+        data: brands,
+      };
     } catch (error) {
-      console.error("Error listing brands:", error);
-      return { success: false, error: "Failed to list brands" };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to list brands",
+      };
     }
   }
 

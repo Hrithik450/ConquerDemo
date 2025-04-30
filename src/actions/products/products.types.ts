@@ -7,13 +7,14 @@ export type NewProduct = typeof products.$inferInsert;
 
 // Zod schema for validation
 export const productSchema = z.object({
-  name: z.string().min(1).max(255),
-  slug: z.string().min(1).max(255),
+  name: z.string().min(1),
+  slug: z.string().min(1),
   description: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  basePrice: z.string().optional(),
   brandId: z.string().uuid(),
   categoryId: z.string().uuid(),
   isActive: z.boolean().default(true),
+  primaryImageUrl: z.string().url().optional(),
   otherData: z.record(z.unknown()).optional(),
 });
 
@@ -22,7 +23,6 @@ export type ProductResponse = {
   success: boolean;
   data?: Product;
   error?: string;
-  message?: string;
 };
 
 export type ProductsResponse = {

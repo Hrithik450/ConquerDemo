@@ -7,13 +7,11 @@ export type NewBrand = typeof brands.$inferInsert;
 
 // Zod schema for validation
 export const brandSchema = z.object({
-  name: z.string().min(1).max(255),
-  slug: z.string().min(1).max(255),
+  name: z.string().min(1),
+  slug: z.string().min(1),
   description: z.string().optional(),
-  imageUrl: z.string().url().optional(),
-  organizationId: z.string().uuid(),
-  isActive: z.boolean().default(true),
-  otherData: z.record(z.unknown()).optional(),
+  logoUrl: z.string().url().optional(),
+  websiteUrl: z.string().url().optional(),
 });
 
 // Response types for API
@@ -21,7 +19,6 @@ export type BrandResponse = {
   success: boolean;
   data?: Brand;
   error?: string;
-  message?: string;
 };
 
 export type BrandsResponse = {

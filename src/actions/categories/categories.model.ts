@@ -9,11 +9,11 @@ export class CategoriesModel {
     return category;
   }
 
-  static async getCategoryById(categoryId: string): Promise<Category | null> {
+  static async getCategoryById(id: string): Promise<Category | null> {
     const [category] = await db
       .select()
       .from(categories)
-      .where(eq(categories.categoryId, categoryId));
+      .where(eq(categories.categoryId, id));
     return category || null;
   }
 
@@ -25,24 +25,20 @@ export class CategoriesModel {
     return category || null;
   }
 
-  static async updateCategory(
-    categoryId: string,
-    data: Partial<NewCategory>
-  ): Promise<Category | null> {
+  static async updateCategory(id: string, data: Partial<NewCategory>): Promise<Category | null> {
     const [category] = await db
       .update(categories)
-      .set(data)
-      .where(eq(categories.categoryId, categoryId))
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(categories.categoryId, id))
       .returning();
     return category || null;
   }
 
-  static async deleteCategory(categoryId: string): Promise<boolean> {
+  static async deleteCategory(id: string): Promise<boolean> {
     const result = await db
       .delete(categories)
-      .where(eq(categories.categoryId, categoryId))
-      .returning();
-    return result.length > 0;
+      .where(eq(categories.categoryId, id));
+    return result.count > 0;
   }
 
   static async listCategories(): Promise<Category[]> {
