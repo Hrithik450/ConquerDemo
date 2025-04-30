@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { BrandsService } from "@/actions/brands/brands.service";
-import type { Brand } from "@/actions/brands/brands.types";
+import { OrganizationsService } from "@/actions/organizations/organizations.service";
+import type { Organization } from "@/actions/organizations/organizations.types";
 
-// POST /api/brands - Create a new brand
 export async function POST(request: Request) {
   try {
-    const data: Partial<Brand> = await request.json();
-    const response = await BrandsService.createBrand(data);
+    const data: Partial<Organization> = await request.json();
+    const response = await OrganizationsService.createOrganization(data);
     
     if (!response.success) {
       return NextResponse.json(
@@ -18,22 +17,19 @@ export async function POST(request: Request) {
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to create brand" },
+      { error: "Failed to create organization" },
       { status: 500 }
     );
   }
 }
 
-// GET /api/brands - List brands
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const brandId = searchParams.get("brandId");
-    const slug = searchParams.get("slug");
-    const searchTerm = searchParams.get("search");
+    const organizationId = searchParams.get("organizationId");
 
-    if (brandId) {
-      const response = await BrandsService.getBrandById(brandId);
+    if (organizationId) {
+      const response = await OrganizationsService.getOrganizationById(organizationId);
       if (!response.success) {
         return NextResponse.json(
           { error: response.error },
@@ -43,29 +39,7 @@ export async function GET(request: Request) {
       return NextResponse.json(response.data);
     }
 
-    if (slug) {
-      const response = await BrandsService.getBrandBySlug(slug);
-      if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
-      }
-      return NextResponse.json(response.data);
-    }
-
-    if (searchTerm) {
-      const response = await BrandsService.searchBrands(searchTerm);
-      if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 500 }
-        );
-      }
-      return NextResponse.json(response.data);
-    }
-
-    const response = await BrandsService.listBrands();
+    const response = await OrganizationsService.listOrganizations();
     if (!response.success) {
       return NextResponse.json(
         { error: response.error },
@@ -75,7 +49,7 @@ export async function GET(request: Request) {
     return NextResponse.json(response.data);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch brands" },
+      { error: "Failed to fetch organizations" },
       { status: 500 }
     );
   }
@@ -84,17 +58,17 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const brandId = searchParams.get("brandId");
+    const organizationId = searchParams.get("organizationId");
 
-    if (!brandId) {
+    if (!organizationId) {
       return NextResponse.json(
-        { error: "Brand ID is required" },
+        { error: "Organization ID is required" },
         { status: 400 }
       );
     }
 
     const data = await request.json();
-    const response = await BrandsService.updateBrand(brandId, data);
+    const response = await OrganizationsService.updateOrganization(organizationId, data);
 
     if (!response.success) {
       return NextResponse.json(
@@ -106,7 +80,7 @@ export async function PUT(request: Request) {
     return NextResponse.json(response.data);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to update brand" },
+      { error: "Failed to update organization" },
       { status: 500 }
     );
   }
@@ -115,16 +89,16 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const brandId = searchParams.get("brandId");
+    const organizationId = searchParams.get("organizationId");
 
-    if (!brandId) {
+    if (!organizationId) {
       return NextResponse.json(
-        { error: "Brand ID is required" },
+        { error: "Organization ID is required" },
         { status: 400 }
       );
     }
 
-    const response = await BrandsService.deleteBrand(brandId);
+    const response = await OrganizationsService.deleteOrganization(organizationId);
 
     if (!response.success) {
       return NextResponse.json(
@@ -136,7 +110,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete brand" },
+      { error: "Failed to delete organization" },
       { status: 500 }
     );
   }

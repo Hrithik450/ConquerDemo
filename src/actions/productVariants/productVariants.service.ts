@@ -8,30 +8,11 @@ export class ProductVariantsService {
       // Validate input data
       const validatedData = productVariantSchema.parse(data);
       
-      // Check if SKU already exists
-      if (validatedData.sku) {
-        const existingVariant = await ProductVariantsModel.getProductVariantBySku(validatedData.sku);
-        if (existingVariant) {
-          return {
-            success: false,
-            error: "Product variant with this SKU already exists",
-          };
-        }
-      }
-
-      // If this is set as default, unset any other default variant for this product
-      if (validatedData.isDefault) {
-        const defaultVariant = await ProductVariantsModel.getDefaultVariantByProductId(validatedData.productId);
-        if (defaultVariant) {
-          await ProductVariantsModel.updateProductVariant(defaultVariant.productVariantId, { isDefault: false });
-        }
-      }
-
-      // Create new variant
-      const variant = await ProductVariantsModel.createProductVariant(validatedData);
+      // Create new product variant
+      const productVariant = await ProductVariantsModel.createProductVariant(validatedData);
       return {
         success: true,
-        data: variant,
+        data: productVariant,
       };
     } catch (error) {
       return {
@@ -43,8 +24,8 @@ export class ProductVariantsService {
 
   static async getProductVariantById(id: string): Promise<ProductVariantResponse> {
     try {
-      const variant = await ProductVariantsModel.getProductVariantById(id);
-      if (!variant) {
+      const productVariant = await ProductVariantsModel.getProductVariantById(id);
+      if (!productVariant) {
         return {
           success: false,
           error: "Product variant not found",
@@ -52,7 +33,7 @@ export class ProductVariantsService {
       }
       return {
         success: true,
-        data: variant,
+        data: productVariant,
       };
     } catch (error) {
       return {
@@ -62,33 +43,12 @@ export class ProductVariantsService {
     }
   }
 
-  static async getProductVariantBySku(sku: string): Promise<ProductVariantResponse> {
+  static async getProductVariantsByProduct(productId: string): Promise<ProductVariantsResponse> {
     try {
-      const variant = await ProductVariantsModel.getProductVariantBySku(sku);
-      if (!variant) {
-        return {
-          success: false,
-          error: "Product variant not found",
-        };
-      }
+      const productVariants = await ProductVariantsModel.getProductVariantsByProduct(productId);
       return {
         success: true,
-        data: variant,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to get product variant",
-      };
-    }
-  }
-
-  static async getProductVariantsByProductId(productId: string): Promise<ProductVariantsResponse> {
-    try {
-      const variants = await ProductVariantsModel.getProductVariantsByProductId(productId);
-      return {
-        success: true,
-        data: variants,
+        data: productVariants,
       };
     } catch (error) {
       return {
@@ -98,38 +58,13 @@ export class ProductVariantsService {
     }
   }
 
-  static async updateProductVariant(
-    id: string,
-    data: Partial<ProductVariant>
-  ): Promise<ProductVariantResponse> {
+  static async updateProductVariant(id: string, data: Partial<ProductVariant>): Promise<ProductVariantResponse> {
     try {
       // Validate input data
       const validatedData = productVariantSchema.partial().parse(data);
       
-      // If updating SKU, check if it already exists
-      if (validatedData.sku) {
-        const existingVariant = await ProductVariantsModel.getProductVariantBySku(validatedData.sku);
-        if (existingVariant && existingVariant.productVariantId !== id) {
-          return {
-            success: false,
-            error: "Product variant with this SKU already exists",
-          };
-        }
-      }
-
-      // If setting as default, unset any other default variant for this product
-      if (validatedData.isDefault) {
-        const variant = await ProductVariantsModel.getProductVariantById(id);
-        if (variant) {
-          const defaultVariant = await ProductVariantsModel.getDefaultVariantByProductId(variant.productId);
-          if (defaultVariant && defaultVariant.productVariantId !== id) {
-            await ProductVariantsModel.updateProductVariant(defaultVariant.productVariantId, { isDefault: false });
-          }
-        }
-      }
-
-      const variant = await ProductVariantsModel.updateProductVariant(id, validatedData);
-      if (!variant) {
+      const productVariant = await ProductVariantsModel.updateProductVariant(id, validatedData);
+      if (!productVariant) {
         return {
           success: false,
           error: "Product variant not found",
@@ -137,7 +72,7 @@ export class ProductVariantsService {
       }
       return {
         success: true,
-        data: variant,
+        data: productVariant,
       };
     } catch (error) {
       return {
@@ -149,8 +84,8 @@ export class ProductVariantsService {
 
   static async deleteProductVariant(id: string): Promise<ProductVariantResponse> {
     try {
-      const success = await ProductVariantsModel.deleteProductVariant(id);
-      if (!success) {
+      const productVariant = await ProductVariantsModel.deleteProductVariant(id);
+      if (!productVariant) {
         return {
           success: false,
           error: "Product variant not found",
@@ -158,6 +93,7 @@ export class ProductVariantsService {
       }
       return {
         success: true,
+        data: productVariant,
       };
     } catch (error) {
       return {
@@ -167,12 +103,27 @@ export class ProductVariantsService {
     }
   }
 
-  static async searchProductVariants(searchTerm: string): Promise<ProductVariantsResponse> {
+  static async listProductVariants(): Promise<ProductVariantsResponse> {
     try {
-      const variants = await ProductVariantsModel.searchProductVariants(searchTerm);
+      const productVariants = await ProductVariantsModel.listProductVariants();
       return {
         success: true,
-        data: variants,
+        data: productVariants,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to list product variants",
+      };
+    }
+  }
+
+  static async searchProductVariants(searchTerm: string): Promise<ProductVariantsResponse> {
+    try {
+      const productVariants = await ProductVariantsModel.searchProductVariants(searchTerm);
+      return {
+        success: true,
+        data: productVariants,
       };
     } catch (error) {
       return {
@@ -182,20 +133,10 @@ export class ProductVariantsService {
     }
   }
 
-  static async updateStockQuantity(
-    id: string,
-    quantity: number
-  ): Promise<ProductVariantResponse> {
+  static async updateStockQuantity(id: string, quantity: number): Promise<ProductVariantResponse> {
     try {
-      if (quantity < 0) {
-        return {
-          success: false,
-          error: "Stock quantity cannot be negative",
-        };
-      }
-
-      const variant = await ProductVariantsModel.updateStockQuantity(id, quantity);
-      if (!variant) {
+      const productVariant = await ProductVariantsModel.updateStockQuantity(id, quantity);
+      if (!productVariant) {
         return {
           success: false,
           error: "Product variant not found",
@@ -203,7 +144,7 @@ export class ProductVariantsService {
       }
       return {
         success: true,
-        data: variant,
+        data: productVariant,
       };
     } catch (error) {
       return {

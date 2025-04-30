@@ -1,72 +1,45 @@
 import { db } from "@/lib/db";
-import { productAttributes } from "@/lib/db/schema";
-import { and, eq } from "drizzle-orm";
-import type { NewProductAttribute, ProductAttribute } from "./productAttributes.types";
+import type { ProductAttribute } from "./productAttributes.types";
 
 export class ProductAttributesModel {
-  static async createProductAttribute(data: NewProductAttribute): Promise<ProductAttribute> {
-    const [productAttribute] = await db.insert(productAttributes).values(data).returning();
-    return productAttribute;
+  static async createProductAttribute(data: ProductAttribute) {
+    return await db.productAttribute.create({
+      data,
+    });
   }
 
-  static async getProductAttribute(productId: string, attributeId: string): Promise<ProductAttribute | null> {
-    const [productAttribute] = await db
-      .select()
-      .from(productAttributes)
-      .where(
-        and(
-          eq(productAttributes.productId, productId),
-          eq(productAttributes.attributeId, attributeId)
-        )
-      );
-    return productAttribute || null;
+  static async getProductAttributeById(id: string) {
+    return await db.productAttribute.findUnique({
+      where: { id },
+    });
   }
 
-  static async getAttributesByProductId(productId: string): Promise<ProductAttribute[]> {
-    return await db
-      .select()
-      .from(productAttributes)
-      .where(eq(productAttributes.productId, productId));
+  static async getProductAttributesByProduct(productId: string) {
+    return await db.productAttribute.findMany({
+      where: { productId },
+    });
   }
 
-  static async getProductsByAttributeId(attributeId: string): Promise<ProductAttribute[]> {
-    return await db
-      .select()
-      .from(productAttributes)
-      .where(eq(productAttributes.attributeId, attributeId));
+  static async getProductAttributesByAttribute(attributeId: string) {
+    return await db.productAttribute.findMany({
+      where: { attributeId },
+    });
   }
 
-  static async updateProductAttribute(
-    productId: string,
-    attributeId: string,
-    data: Partial<NewProductAttribute>
-  ): Promise<ProductAttribute | null> {
-    const [productAttribute] = await db
-      .update(productAttributes)
-      .set(data)
-      .where(
-        and(
-          eq(productAttributes.productId, productId),
-          eq(productAttributes.attributeId, attributeId)
-        )
-      )
-      .returning();
-    return productAttribute || null;
+  static async updateProductAttribute(id: string, data: Partial<ProductAttribute>) {
+    return await db.productAttribute.update({
+      where: { id },
+      data,
+    });
   }
 
-  static async deleteProductAttribute(productId: string, attributeId: string): Promise<boolean> {
-    const result = await db
-      .delete(productAttributes)
-      .where(
-        and(
-          eq(productAttributes.productId, productId),
-          eq(productAttributes.attributeId, attributeId)
-        )
-      );
-    return result.count > 0;
+  static async deleteProductAttribute(id: string) {
+    return await db.productAttribute.delete({
+      where: { id },
+    });
   }
 
-  static async listProductAttributes(): Promise<ProductAttribute[]> {
-    return await db.select().from(productAttributes);
+  static async listProductAttributes() {
+    return await db.productAttribute.findMany();
   }
 }

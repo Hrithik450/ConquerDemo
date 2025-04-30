@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { CategoriesService } from "@/actions/categories/categories.service";
-import type { Category } from "@/actions/categories/categories.types";
+import { AttributeValuesService } from "@/actions/attributeValues/attributeValues.service";
+import type { AttributeValue } from "@/actions/attributeValues/attributeValues.types";
 
-// POST /api/categories - Create a new category
 export async function POST(request: Request) {
   try {
-    const data: Partial<Category> = await request.json();
-    const response = await CategoriesService.createCategory(data);
+    const data: Partial<AttributeValue> = await request.json();
+    const response = await AttributeValuesService.createAttributeValue(data);
     
     if (!response.success) {
       return NextResponse.json(
@@ -18,23 +17,20 @@ export async function POST(request: Request) {
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to create category" },
+      { error: "Failed to create attribute value" },
       { status: 500 }
     );
   }
 }
 
-// GET /api/categories - List categories
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const categoryId = searchParams.get("categoryId");
-    const slug = searchParams.get("slug");
-    const searchTerm = searchParams.get("search");
-    const activeOnly = searchParams.get("activeOnly") === "true";
+    const attributeValueId = searchParams.get("attributeValueId");
+    const attributeId = searchParams.get("attributeId");
 
-    if (categoryId) {
-      const response = await CategoriesService.getCategoryById(categoryId);
+    if (attributeValueId) {
+      const response = await AttributeValuesService.getAttributeValueById(attributeValueId);
       if (!response.success) {
         return NextResponse.json(
           { error: response.error },
@@ -44,19 +40,8 @@ export async function GET(request: Request) {
       return NextResponse.json(response.data);
     }
 
-    if (slug) {
-      const response = await CategoriesService.getCategoryBySlug(slug);
-      if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
-      }
-      return NextResponse.json(response.data);
-    }
-
-    if (searchTerm) {
-      const response = await CategoriesService.searchCategories(searchTerm, activeOnly);
+    if (attributeId) {
+      const response = await AttributeValuesService.getAttributeValuesByAttributeId(attributeId);
       if (!response.success) {
         return NextResponse.json(
           { error: response.error },
@@ -66,7 +51,7 @@ export async function GET(request: Request) {
       return NextResponse.json(response.data);
     }
 
-    const response = await CategoriesService.listCategories();
+    const response = await AttributeValuesService.listAttributeValues();
     if (!response.success) {
       return NextResponse.json(
         { error: response.error },
@@ -76,7 +61,7 @@ export async function GET(request: Request) {
     return NextResponse.json(response.data);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch categories" },
+      { error: "Failed to fetch attribute values" },
       { status: 500 }
     );
   }
@@ -85,17 +70,17 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const categoryId = searchParams.get("categoryId");
+    const attributeValueId = searchParams.get("attributeValueId");
 
-    if (!categoryId) {
+    if (!attributeValueId) {
       return NextResponse.json(
-        { error: "Category ID is required" },
+        { error: "Attribute Value ID is required" },
         { status: 400 }
       );
     }
 
     const data = await request.json();
-    const response = await CategoriesService.updateCategory(categoryId, data);
+    const response = await AttributeValuesService.updateAttributeValue(attributeValueId, data);
 
     if (!response.success) {
       return NextResponse.json(
@@ -107,7 +92,7 @@ export async function PUT(request: Request) {
     return NextResponse.json(response.data);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to update category" },
+      { error: "Failed to update attribute value" },
       { status: 500 }
     );
   }
@@ -116,16 +101,16 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const categoryId = searchParams.get("categoryId");
+    const attributeValueId = searchParams.get("attributeValueId");
 
-    if (!categoryId) {
+    if (!attributeValueId) {
       return NextResponse.json(
-        { error: "Category ID is required" },
+        { error: "Attribute Value ID is required" },
         { status: 400 }
       );
     }
 
-    const response = await CategoriesService.deleteCategory(categoryId);
+    const response = await AttributeValuesService.deleteAttributeValue(attributeValueId);
 
     if (!response.success) {
       return NextResponse.json(
@@ -137,7 +122,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete category" },
+      { error: "Failed to delete attribute value" },
       { status: 500 }
     );
   }

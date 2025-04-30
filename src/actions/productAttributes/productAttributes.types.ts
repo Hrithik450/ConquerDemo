@@ -7,10 +7,12 @@ export type NewProductAttribute = typeof productAttributes.$inferInsert;
 
 // Zod schema for validation
 export const productAttributeSchema = z.object({
-  productId: z.string().uuid(),
-  attributeId: z.string().uuid(),
+  id: z.string().optional(),
+  productId: z.string(),
+  attributeId: z.string(),
   isRequired: z.boolean().default(false),
-  displayOrder: z.number().int().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 // Response types for API
