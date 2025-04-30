@@ -5,14 +5,20 @@ import type {
   ProductAttributeResponse,
   ProductAttributesResponse,
 } from "./productAttributes.types";
+import { v4 as uuidv4 } from "uuid";
 
 export class ProductAttributesService {
   static async createProductAttribute(
     data: Partial<ProductAttribute>
   ): Promise<ProductAttributeResponse> {
     try {
-      const validatedData = productAttributeSchema.parse(data);
-      const productAttribute = await ProductAttributesModel.createProductAttribute(validatedData);
+      const validatedData = productAttributeSchema.parse({
+        ...data,
+        productAttributeId: data.productAttributeId || uuidv4(),
+        createdAt: data.createdAt || new Date(),
+        displayOrder: data.displayOrder ?? null,
+      });
+      const [productAttribute] = await ProductAttributesModel.createProductAttribute(validatedData);
       return {
         success: true,
         data: productAttribute,
@@ -78,8 +84,11 @@ export class ProductAttributesService {
 
   static async updateProductAttribute(id: string, data: Partial<ProductAttribute>): Promise<ProductAttributeResponse> {
     try {
-      const validatedData = productAttributeSchema.partial().parse(data);
-      const productAttribute = await ProductAttributesModel.updateProductAttribute(id, validatedData);
+      const validatedData = productAttributeSchema.partial().parse({
+        ...data,
+        displayOrder: data.displayOrder ?? null,
+      });
+      const [productAttribute] = await ProductAttributesModel.updateProductAttribute(id, validatedData);
       if (!productAttribute) {
         return {
           success: false,
@@ -100,8 +109,8 @@ export class ProductAttributesService {
 
   static async deleteProductAttribute(id: string): Promise<ProductAttributeResponse> {
     try {
-      const success = await ProductAttributesModel.deleteProductAttribute(id);
-      if (!success) {
+      const [deleted] = await ProductAttributesModel.deleteProductAttribute(id);
+      if (!deleted) {
         return {
           success: false,
           error: "Product attribute not found",
@@ -109,6 +118,7 @@ export class ProductAttributesService {
       }
       return {
         success: true,
+        data: deleted,
       };
     } catch (error) {
       return {

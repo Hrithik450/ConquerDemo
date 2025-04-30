@@ -4,10 +4,10 @@ import { BrandsService } from "@/actions/brands/brands.service";
 // GET /api/brands/slug/[slug] - Get a brand by slug
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const response = await BrandsService.getBrandBySlug(slug);
 
     if (!response.success) {

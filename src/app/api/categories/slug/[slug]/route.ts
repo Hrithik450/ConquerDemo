@@ -4,10 +4,10 @@ import { CategoriesService } from "@/actions/categories/categories.service";
 // GET /api/categories/slug/[slug] - Get a category by slug
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const response = await CategoriesService.getCategoryBySlug(slug);
 
     if (!response.success) {

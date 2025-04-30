@@ -6,10 +6,10 @@ import { z } from "zod";
 // GET /api/categories/[categoryId] - Get a specific category
 export async function GET(
   request: Request,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: Promise<{ categoryId: string }> }
 ) {
   try {
-    const { categoryId } = params;
+    const { categoryId } = await params;
     const response = await CategoriesService.getCategoryById(categoryId);
 
     if (!response.success) {
@@ -28,10 +28,10 @@ export async function GET(
 // PUT /api/categories/[categoryId] - Update a category
 export async function PUT(
   request: Request,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: Promise<{ categoryId: string }> }
 ) {
   try {
-    const { categoryId } = params;
+    const { categoryId } = await params;
     const body = await request.json();
     const validatedData = categorySchema.partial().parse(body);
 
@@ -59,10 +59,10 @@ export async function PUT(
 // DELETE /api/categories/[categoryId] - Delete a category
 export async function DELETE(
   request: Request,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: Promise<{ categoryId: string }> }
 ) {
   try {
-    const { categoryId } = params;
+    const { categoryId } = await params;
     const response = await CategoriesService.deleteCategory(categoryId);
 
     if (!response.success) {

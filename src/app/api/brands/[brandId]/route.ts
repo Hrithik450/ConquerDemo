@@ -6,10 +6,10 @@ import { z } from "zod";
 // GET /api/brands/[brandId] - Get a specific brand
 export async function GET(
   request: Request,
-  { params }: { params: { brandId: string } }
+  { params }: { params: Promise<{ brandId: string }> }
 ) {
   try {
-    const { brandId } = params;
+    const { brandId } = (await params);
     const response = await BrandsService.getBrandById(brandId);
 
     if (!response.success) {
@@ -28,10 +28,10 @@ export async function GET(
 // PUT /api/brands/[brandId] - Update a brand
 export async function PUT(
   request: Request,
-  { params }: { params: { brandId: string } }
+  { params }: { params: Promise<{ brandId: string }> }
 ) {
   try {
-    const { brandId } = params;
+    const { brandId } = await params;
     const body = await request.json();
     const validatedData = brandSchema.partial().parse(body);
 
@@ -59,10 +59,10 @@ export async function PUT(
 // DELETE /api/brands/[brandId] - Delete a brand
 export async function DELETE(
   request: Request,
-  { params }: { params: { brandId: string } }
+  { params }: { params: Promise<{ brandId: string }> }
 ) {
   try {
-    const { brandId } = params;
+    const { brandId } = await params;
     const response = await BrandsService.deleteBrand(brandId);
 
     if (!response.success) {

@@ -1,7 +1,6 @@
 import { CategoriesModel } from "./categories.model";
 import { categorySchema } from "./categories.types";
 import type { Category, CategoryResponse, CategoriesResponse } from "./categories.types";
-import { slugify } from "@/lib/utils";
 
 export class CategoriesService {
   static async createCategory(data: Partial<Category>): Promise<CategoryResponse> {

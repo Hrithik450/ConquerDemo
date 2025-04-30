@@ -1,7 +1,6 @@
 import { BrandsModel } from "./brands.model";
 import { brandSchema } from "./brands.types";
 import type { Brand, BrandResponse, BrandsResponse } from "./brands.types";
-import { slugify } from "@/lib/utils";
 
 export class BrandsService {
   static async createBrand(data: Partial<Brand>): Promise<BrandResponse> {

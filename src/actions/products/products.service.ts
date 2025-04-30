@@ -1,7 +1,6 @@
 import { ProductsModel } from "./products.model";
 import { productSchema } from "./products.types";
 import type { Product, ProductResponse, ProductsResponse } from "./products.types";
-import { slugify } from "@/lib/utils";
 
 export class ProductsService {
   static async createProduct(data: Partial<Product>): Promise<ProductResponse> {
