@@ -177,6 +177,7 @@ export const brands = pgTable(
     description: text("description"),
     logoUrl: text("logoUrl"),
     websiteUrl: text("websiteUrl"),
+    otherData: jsonb("otherData"),
     createdAt: timestamp("createdAt", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -194,8 +195,8 @@ export const brands = pgTable(
 /**
  * Junction table representing which brands operate in which categories
  * @example
- * - Apple → Mobiles
- * - Apple → Laptops
+ * - Apple → Mobiles - iphones
+ * - Apple → Laptops - macbooks
  * - Nike → Shoes
  */
 export const brandCategories = pgTable(
@@ -243,6 +244,7 @@ export const products = pgTable(
       .references(() => categories.categoryId, { onDelete: "restrict" }),
     isActive: boolean("isActive").notNull().default(true),
     primaryImageUrl: text("primaryImageUrl"),
+    productMedia: jsonb("productMedia"),
     otherData: jsonb("otherData"),
     createdAt: timestamp("createdAt", { withTimezone: true })
       .defaultNow()
@@ -724,6 +726,8 @@ export const cartItems = pgTable(
   })
 );
 
+//wishlist to be addd //todo
+
 /**
  * Customer orders
  */
@@ -765,6 +769,9 @@ export const orders = pgTable(
     dateIndex: index("ordersDateIdx").on(table.createdAt),
   })
 );
+
+
+// addreses table. 
 
 /**
  * Order items

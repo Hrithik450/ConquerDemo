@@ -42,74 +42,79 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/admin/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Products",
+      url: "/admin/products",
       icon: ListIcon,
     },
     {
-      title: "Analytics",
-      url: "#",
+      title: "Orders",
+      url: "/admin/orders",
       icon: BarChartIcon,
     },
     {
-      title: "Projects",
-      url: "#",
+      title: "Categories",
+      url: "/admin/categories",
       icon: FolderIcon,
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Organizations",
+      url: "/admin/organizations",
+      icon: UsersIcon,
+    },
+    {
+      title: "Customers",
+      url: "/admin/customers",
       icon: UsersIcon,
     },
   ],
   navClouds: [
     {
-      title: "Capture",
-      icon: CameraIcon,
+      title: "Inventory",
+      icon: DatabaseIcon,
       isActive: true,
-      url: "#",
+      url: "/admin/inventory",
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: "Stock Levels",
+          url: "/admin/inventory/stock",
         },
         {
-          title: "Archived",
-          url: "#",
+          title: "Low Stock Alerts",
+          url: "/admin/inventory/alerts",
         },
       ],
     },
     {
-      title: "Proposal",
+      title: "Marketing",
       icon: FileTextIcon,
-      url: "#",
+      url: "/admin/marketing",
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: "Promotions",
+          url: "/admin/marketing/promotions",
         },
         {
-          title: "Archived",
-          url: "#",
+          title: "Discounts",
+          url: "/admin/marketing/discounts",
         },
       ],
     },
     {
-      title: "Prompts",
+      title: "Reports",
       icon: FileCodeIcon,
-      url: "#",
+      url: "/admin/reports",
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: "Sales Reports",
+          url: "/admin/reports/sales",
         },
         {
-          title: "Archived",
-          url: "#",
+          title: "Customer Reports",
+          url: "/admin/reports/customers",
         },
       ],
     },
@@ -117,34 +122,34 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/admin/settings",
       icon: SettingsIcon,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: "Help Center",
+      url: "/admin/help",
       icon: HelpCircleIcon,
     },
     {
       title: "Search",
-      url: "#",
+      url: "/admin/search",
       icon: SearchIcon,
     },
   ],
   documents: [
     {
-      name: "Data Library",
-      url: "#",
+      name: "Product Catalog",
+      url: "/admin/catalog",
       icon: DatabaseIcon,
     },
     {
-      name: "Reports",
-      url: "#",
+      name: "Order Management",
+      url: "/admin/orders",
       icon: ClipboardListIcon,
     },
     {
-      name: "Word Assistant",
-      url: "#",
+      name: "Customer Support",
+      url: "/admin/support",
       icon: FileIcon,
     },
   ],
