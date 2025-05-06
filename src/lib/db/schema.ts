@@ -18,22 +18,74 @@ import {
 export const users = pgTable(
   "users",
   {
-    userId: uuid("userId").defaultRandom().primaryKey(),
-    email: varchar("email", { length: 255 }).notNull().unique(),
-    firstName: varchar("firstName", { length: 100 }),
-    lastName: varchar("lastName", { length: 100 }),
-    phone: varchar("phone", { length: 20 }),
-    role: varchar("role", { length: 20 }).notNull().default("employee"),
-    createdAt: timestamp("createdAt", { withTimezone: true })
-      .defaultNow()
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("userId").defaultRandom().notNull().unique(),
+    name: text("name"),
+    email: text("email").notNull().unique(),
+    emailVerified: timestamp("emailVerified", { mode: "date" }),
+    image: text("image"),
+    firstName: text("firstName"),
+    lastName: text("lastName"),
+    phone: text("phone"),
+    role: text("role", { enum: ["user", "admin", "superadmin"] })
+      .default("user")
       .notNull(),
-    updatedAt: timestamp("updatedAt", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   },
   (table) => ({
     emailIndex: uniqueIndex("usersEmailIdx").on(table.email),
     roleIndex: index("usersRoleIdx").on(table.role),
+  })
+);
+
+export const accounts = pgTable(
+  "accounts",
+  {
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.userId, { onDelete: "cascade" }),
+    type: varchar("type", { length: 255 }).notNull(),
+    provider: varchar("provider", { length: 255 }).notNull(),
+    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: varchar("token_type", { length: 255 }),
+    scope: varchar("scope", { length: 255 }),
+    id_token: text("id_token"),
+    session_state: varchar("session_state", { length: 255 }),
+  },
+  (table) => ({
+    compoundKey: primaryKey({
+      columns: [table.provider, table.providerAccountId],
+    }),
+  })
+);
+
+export const sessions = pgTable(
+  "sessions",
+  {
+    sessionToken: varchar("sessionToken", { length: 255 }).primaryKey(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.userId, { onDelete: "cascade" }),
+    expires: timestamp("expires", { withTimezone: true }).notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("sessions_userId_idx").on(table.userId),
+  })
+);
+
+export const verificationTokens = pgTable(
+  "verificationTokens",
+  {
+    identifier: varchar("identifier", { length: 255 }).notNull(),
+    token: varchar("token", { length: 255 }).notNull(),
+    expires: timestamp("expires", { withTimezone: true }).notNull(),
+  },
+  (table) => ({
+    compoundKey: primaryKey({ columns: [table.identifier, table.token] }),
   })
 );
 

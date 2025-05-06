@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { loginWithEmail } from "@/actions/auth/login";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -14,13 +14,10 @@ export function LoginForm() {
     setError(null);
 
     try {
-      const result = await signIn("email", {
-        email,
-        redirect: false,
-      });
+      const result = await loginWithEmail(email);
 
-      if (result?.error) {
-        setError(result.error);
+      if (!result.success) {
+        setError(result.error || "An error occurred during login");
       } else {
         // Show success message
         alert("Check your email for the login link!");
