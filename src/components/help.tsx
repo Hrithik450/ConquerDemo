@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import Headings from "./headings";
 import { helpCards } from "@/lib/utils/constant";
-import WideCard from "./wideCard";
+import WideCard from "./widecard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";

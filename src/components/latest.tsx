@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import WideCard from "./wideCard";
+import WideCard from "./widecard";
 import Headings from "./headings";
 import { latestCards } from "@/lib/utils/constant";
 import { Swiper, SwiperSlide } from "swiper/react";
