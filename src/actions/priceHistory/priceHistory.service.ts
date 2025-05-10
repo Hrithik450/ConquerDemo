@@ -1,17 +1,24 @@
 import { PriceHistoryModel } from "./priceHistory.model";
 import { priceHistorySchema } from "./priceHistory.types";
-import type { PriceHistory, PriceHistoryResponse, PriceHistoriesResponse } from "./priceHistory.types";
+import type {
+  PriceHistory,
+  PriceHistoryResponse,
+  PriceHistoriesResponse,
+} from "./priceHistory.types";
 
 export class PriceHistoryService {
-  static async createPriceHistory(data: Partial<PriceHistory>): Promise<PriceHistoryResponse> {
+  static async createPriceHistory(
+    data: Partial<PriceHistory>
+  ): Promise<PriceHistoryResponse> {
     try {
       // Validate input data and transform numbers to strings
       const validatedData = priceHistorySchema.parse(data);
-      
+
       // Check if there's an active price history for this variant
-      const currentHistory = await PriceHistoryModel.getCurrentPriceHistoryByVariantId(
-        validatedData.variantId
-      );
+      const currentHistory =
+        await PriceHistoryModel.getCurrentPriceHistoryByVariantId(
+          validatedData.variantId
+        );
       if (currentHistory) {
         // End the current price history
         await PriceHistoryModel.updatePriceHistory(currentHistory.id, {
@@ -28,7 +35,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to create price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to create price history",
       };
     }
   }
@@ -49,7 +59,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get price history",
       };
     }
   }
@@ -58,7 +71,9 @@ export class PriceHistoryService {
     variantId: string
   ): Promise<PriceHistoryResponse> {
     try {
-      const history = await PriceHistoryModel.getCurrentPriceHistoryByVariantId(variantId);
+      const history = await PriceHistoryModel.getCurrentPriceHistoryByVariantId(
+        variantId
+      );
       if (!history) {
         return {
           success: false,
@@ -72,7 +87,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get current price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get current price history",
       };
     }
   }
@@ -81,7 +99,9 @@ export class PriceHistoryService {
     variantId: string
   ): Promise<PriceHistoriesResponse> {
     try {
-      const histories = await PriceHistoryModel.getPriceHistoryByVariantId(variantId);
+      const histories = await PriceHistoryModel.getPriceHistoryByVariantId(
+        variantId
+      );
       return {
         success: true,
         data: histories,
@@ -89,7 +109,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get price history",
       };
     }
   }
@@ -119,7 +142,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get price history",
       };
     }
   }
@@ -131,8 +157,11 @@ export class PriceHistoryService {
     try {
       // Validate input data and transform numbers to strings
       const validatedData = priceHistorySchema.partial().parse(data);
-      
-      const history = await PriceHistoryModel.updatePriceHistory(id, validatedData);
+
+      const history = await PriceHistoryModel.updatePriceHistory(
+        id,
+        validatedData
+      );
       if (!history) {
         return {
           success: false,
@@ -146,7 +175,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to update price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to update price history",
       };
     }
   }
@@ -166,7 +198,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to delete price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete price history",
       };
     }
   }
@@ -175,7 +210,9 @@ export class PriceHistoryService {
     variantId: string
   ): Promise<PriceHistoryResponse> {
     try {
-      const success = await PriceHistoryModel.deletePriceHistoryByVariantId(variantId);
+      const success = await PriceHistoryModel.deletePriceHistoryByVariantId(
+        variantId
+      );
       if (!success) {
         return {
           success: false,
@@ -188,7 +225,10 @@ export class PriceHistoryService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to delete price history",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete price history",
       };
     }
   }

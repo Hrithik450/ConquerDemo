@@ -1,17 +1,25 @@
 import { db } from "@/lib/db";
 import { productAttributeValues } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import type { NewProductAttributeValue, ProductAttributeValue } from "./productAttributeValues.types";
+import type {
+  NewProductAttributeValue,
+  ProductAttributeValue,
+} from "./productAttributeValues.types";
 
 export class ProductAttributeValuesModel {
   static async createProductAttributeValue(
     data: NewProductAttributeValue
   ): Promise<ProductAttributeValue> {
-    const [value] = await db.insert(productAttributeValues).values(data).returning();
+    const [value] = await db
+      .insert(productAttributeValues)
+      .values(data)
+      .returning();
     return value;
   }
 
-  static async getProductAttributeValueById(id: string): Promise<ProductAttributeValue | null> {
+  static async getProductAttributeValueById(
+    id: string
+  ): Promise<ProductAttributeValue | null> {
     const [value] = await db
       .select()
       .from(productAttributeValues)
@@ -75,7 +83,9 @@ export class ProductAttributeValuesModel {
     return result.count > 0;
   }
 
-  static async deleteAllProductAttributeValues(productAttributeId: string): Promise<boolean> {
+  static async deleteAllProductAttributeValues(
+    productAttributeId: string
+  ): Promise<boolean> {
     const result = await db
       .delete(productAttributeValues)
       .where(eq(productAttributeValues.productAttributeId, productAttributeId));

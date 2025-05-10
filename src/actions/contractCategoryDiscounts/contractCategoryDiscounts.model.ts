@@ -1,15 +1,26 @@
 import { db } from "@/lib/db";
 import { contractCategoryDiscounts } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
-import type { NewContractCategoryDiscount, ContractCategoryDiscount } from "./contractCategoryDiscounts.types";
+import type {
+  NewContractCategoryDiscount,
+  ContractCategoryDiscount,
+} from "./contractCategoryDiscounts.types";
 
 export class ContractCategoryDiscountsModel {
-  static async createContractCategoryDiscount(data: NewContractCategoryDiscount): Promise<ContractCategoryDiscount> {
-    const [discount] = await db.insert(contractCategoryDiscounts).values(data).returning();
+  static async createContractCategoryDiscount(
+    data: NewContractCategoryDiscount
+  ): Promise<ContractCategoryDiscount> {
+    const [discount] = await db
+      .insert(contractCategoryDiscounts)
+      .values(data)
+      .returning();
     return discount;
   }
 
-  static async getContractCategoryDiscount(contractId: string, categoryId: string): Promise<ContractCategoryDiscount | null> {
+  static async getContractCategoryDiscount(
+    contractId: string,
+    categoryId: string
+  ): Promise<ContractCategoryDiscount | null> {
     const [discount] = await db
       .select()
       .from(contractCategoryDiscounts)
@@ -22,14 +33,18 @@ export class ContractCategoryDiscountsModel {
     return discount || null;
   }
 
-  static async getDiscountsByContractId(contractId: string): Promise<ContractCategoryDiscount[]> {
+  static async getDiscountsByContractId(
+    contractId: string
+  ): Promise<ContractCategoryDiscount[]> {
     return await db
       .select()
       .from(contractCategoryDiscounts)
       .where(eq(contractCategoryDiscounts.contractId, contractId));
   }
 
-  static async getDiscountsByCategoryId(categoryId: string): Promise<ContractCategoryDiscount[]> {
+  static async getDiscountsByCategoryId(
+    categoryId: string
+  ): Promise<ContractCategoryDiscount[]> {
     return await db
       .select()
       .from(contractCategoryDiscounts)
@@ -54,7 +69,10 @@ export class ContractCategoryDiscountsModel {
     return discount || null;
   }
 
-  static async deleteContractCategoryDiscount(contractId: string, categoryId: string): Promise<boolean> {
+  static async deleteContractCategoryDiscount(
+    contractId: string,
+    categoryId: string
+  ): Promise<boolean> {
     const result = await db
       .delete(contractCategoryDiscounts)
       .where(
@@ -66,7 +84,9 @@ export class ContractCategoryDiscountsModel {
     return result.count > 0;
   }
 
-  static async listContractCategoryDiscounts(): Promise<ContractCategoryDiscount[]> {
+  static async listContractCategoryDiscounts(): Promise<
+    ContractCategoryDiscount[]
+  > {
     return await db.select().from(contractCategoryDiscounts);
   }
 }

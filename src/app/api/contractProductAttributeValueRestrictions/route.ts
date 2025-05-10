@@ -46,7 +46,10 @@ export async function GET(request: NextRequest) {
     const restrictions = await listContractProductAttributeValueRestrictions();
     return NextResponse.json(restrictions);
   } catch (error) {
-    console.error("Error getting contract product attribute value restrictions:", error);
+    console.error(
+      "Error getting contract product attribute value restrictions:",
+      error
+    );
     return NextResponse.json(
       { success: false, error: "Failed to get restrictions" },
       { status: 500 }
@@ -60,7 +63,10 @@ export async function POST(request: NextRequest) {
     const result = await createContractProductAttributeValueRestriction(data);
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error creating contract product attribute value restriction:", error);
+    console.error(
+      "Error creating contract product attribute value restriction:",
+      error
+    );
     return NextResponse.json(
       { success: false, error: "Failed to create restriction" },
       { status: 500 }
@@ -75,7 +81,7 @@ export async function PUT(request: NextRequest) {
     const productId = searchParams.get("productId");
     const attributeId = searchParams.get("attributeId");
     const attributeValueId = searchParams.get("attributeValueId");
-    
+
     if (!contractId || !productId || !attributeId || !attributeValueId) {
       return NextResponse.json(
         { success: false, error: "Missing required parameters" },
@@ -93,7 +99,10 @@ export async function PUT(request: NextRequest) {
     );
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error updating contract product attribute value restriction:", error);
+    console.error(
+      "Error updating contract product attribute value restriction:",
+      error
+    );
     return NextResponse.json(
       { success: false, error: "Failed to update restriction" },
       { status: 500 }
@@ -108,7 +117,7 @@ export async function DELETE(request: NextRequest) {
     const productId = searchParams.get("productId");
     const attributeId = searchParams.get("attributeId");
     const attributeValueId = searchParams.get("attributeValueId");
-    
+
     if (!contractId || !productId || !attributeId || !attributeValueId) {
       return NextResponse.json(
         { success: false, error: "Missing required parameters" },
@@ -124,10 +133,13 @@ export async function DELETE(request: NextRequest) {
     );
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error deleting contract product attribute value restriction:", error);
+    console.error(
+      "Error deleting contract product attribute value restriction:",
+      error
+    );
     return NextResponse.json(
       { success: false, error: "Failed to delete restriction" },
       { status: 500 }
     );
   }
-} 
+}

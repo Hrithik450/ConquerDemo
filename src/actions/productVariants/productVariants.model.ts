@@ -4,7 +4,9 @@ import { eq, and, like } from "drizzle-orm";
 import type { ProductVariant } from "./productVariants.types";
 
 export class ProductVariantsModel {
-  static async createProductVariant(data: Omit<ProductVariant, "id" | "createdAt" | "updatedAt">) {
+  static async createProductVariant(
+    data: Omit<ProductVariant, "id" | "createdAt" | "updatedAt">
+  ) {
     const [variant] = await db
       .insert(productVariants)
       .values({
@@ -29,7 +31,9 @@ export class ProductVariantsModel {
     return variant ? this.mapToProductVariant(variant) : null;
   }
 
-  static async getProductVariantBySku(sku: string): Promise<ProductVariant | null> {
+  static async getProductVariantBySku(
+    sku: string
+  ): Promise<ProductVariant | null> {
     const [variant] = await db
       .select()
       .from(productVariants)
@@ -42,10 +46,12 @@ export class ProductVariantsModel {
       .select()
       .from(productVariants)
       .where(eq(productVariants.productId, productId));
-    return Promise.all(variants.map(v => this.mapToProductVariant(v)));
+    return Promise.all(variants.map((v) => this.mapToProductVariant(v)));
   }
 
-  static async getDefaultVariantByProductId(productId: string): Promise<ProductVariant | null> {
+  static async getDefaultVariantByProductId(
+    productId: string
+  ): Promise<ProductVariant | null> {
     const [variant] = await db
       .select()
       .from(productVariants)
@@ -82,18 +88,18 @@ export class ProductVariantsModel {
   }
 
   static async listProductVariants() {
-    const variants = await db
-      .select()
-      .from(productVariants);
-    return Promise.all(variants.map(v => this.mapToProductVariant(v)));
+    const variants = await db.select().from(productVariants);
+    return Promise.all(variants.map((v) => this.mapToProductVariant(v)));
   }
 
-  static async searchProductVariants(searchTerm: string): Promise<ProductVariant[]> {
+  static async searchProductVariants(
+    searchTerm: string
+  ): Promise<ProductVariant[]> {
     const variants = await db
       .select()
       .from(productVariants)
       .where(like(productVariants.sku, `%${searchTerm}%`));
-    return Promise.all(variants.map(v => this.mapToProductVariant(v)));
+    return Promise.all(variants.map((v) => this.mapToProductVariant(v)));
   }
 
   static async updateStockQuantity(
@@ -102,16 +108,18 @@ export class ProductVariantsModel {
   ): Promise<ProductVariant | null> {
     const [variant] = await db
       .update(productVariants)
-      .set({ 
-        stockQuantity: quantity, 
-        updatedAt: new Date() 
+      .set({
+        stockQuantity: quantity,
+        updatedAt: new Date(),
       })
       .where(eq(productVariants.productVariantId, id))
       .returning();
     return variant ? this.mapToProductVariant(variant) : null;
   }
 
-  private static async mapToProductVariant(dbVariant: typeof productVariants.$inferSelect): Promise<ProductVariant> {
+  private static async mapToProductVariant(
+    dbVariant: typeof productVariants.$inferSelect
+  ): Promise<ProductVariant> {
     // Get the product name
     const [product] = await db
       .select({ name: products.name })

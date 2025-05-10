@@ -18,7 +18,8 @@ export class ProductAttributesService {
         createdAt: data.createdAt || new Date(),
         displayOrder: data.displayOrder ?? null,
       });
-      const [productAttribute] = await ProductAttributesModel.createProductAttribute(validatedData);
+      const [productAttribute] =
+        await ProductAttributesModel.createProductAttribute(validatedData);
       return {
         success: true,
         data: productAttribute,
@@ -26,14 +27,20 @@ export class ProductAttributesService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to create product attribute",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to create product attribute",
       };
     }
   }
 
-  static async getProductAttributeById(id: string): Promise<ProductAttributeResponse> {
+  static async getProductAttributeById(
+    id: string
+  ): Promise<ProductAttributeResponse> {
     try {
-      const productAttribute = await ProductAttributesModel.getProductAttributeById(id);
+      const productAttribute =
+        await ProductAttributesModel.getProductAttributeById(id);
       if (!productAttribute) {
         return {
           success: false,
@@ -47,14 +54,20 @@ export class ProductAttributesService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get product attribute",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get product attribute",
       };
     }
   }
 
-  static async getProductAttributesByProduct(productId: string): Promise<ProductAttributesResponse> {
+  static async getProductAttributesByProduct(
+    productId: string
+  ): Promise<ProductAttributesResponse> {
     try {
-      const productAttributes = await ProductAttributesModel.getProductAttributesByProduct(productId);
+      const productAttributes =
+        await ProductAttributesModel.getProductAttributesByProduct(productId);
       return {
         success: true,
         data: productAttributes,
@@ -62,14 +75,22 @@ export class ProductAttributesService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get product attributes",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get product attributes",
       };
     }
   }
 
-  static async getProductAttributesByAttribute(attributeId: string): Promise<ProductAttributesResponse> {
+  static async getProductAttributesByAttribute(
+    attributeId: string
+  ): Promise<ProductAttributesResponse> {
     try {
-      const productAttributes = await ProductAttributesModel.getProductAttributesByAttribute(attributeId);
+      const productAttributes =
+        await ProductAttributesModel.getProductAttributesByAttribute(
+          attributeId
+        );
       return {
         success: true,
         data: productAttributes,
@@ -77,18 +98,22 @@ export class ProductAttributesService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get product attributes",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get product attributes",
       };
     }
   }
 
-  static async updateProductAttribute(id: string, data: Partial<ProductAttribute>): Promise<ProductAttributeResponse> {
+  static async updateProductAttribute(
+    id: string,
+    data: Partial<ProductAttribute>
+  ): Promise<ProductAttributeResponse> {
     try {
-      const validatedData = productAttributeSchema.partial().parse({
-        ...data,
-        displayOrder: data.displayOrder ?? null,
-      });
-      const [productAttribute] = await ProductAttributesModel.updateProductAttribute(id, validatedData);
+      const validatedData = productAttributeSchema.partial().parse(data);
+      const [productAttribute] =
+        await ProductAttributesModel.updateProductAttribute(id, validatedData);
       if (!productAttribute) {
         return {
           success: false,
@@ -102,12 +127,17 @@ export class ProductAttributesService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to update product attribute",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to update product attribute",
       };
     }
   }
 
-  static async deleteProductAttribute(id: string): Promise<ProductAttributeResponse> {
+  static async deleteProductAttribute(
+    id: string
+  ): Promise<ProductAttributeResponse> {
     try {
       const [deleted] = await ProductAttributesModel.deleteProductAttribute(id);
       if (!deleted) {
@@ -123,14 +153,18 @@ export class ProductAttributesService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to delete product attribute",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete product attribute",
       };
     }
   }
 
   static async listProductAttributes(): Promise<ProductAttributesResponse> {
     try {
-      const productAttributes = await ProductAttributesModel.listProductAttributes();
+      const productAttributes =
+        await ProductAttributesModel.listProductAttributes();
       return {
         success: true,
         data: productAttributes,
@@ -138,7 +172,10 @@ export class ProductAttributesService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to list product attributes",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to list product attributes",
       };
     }
   }

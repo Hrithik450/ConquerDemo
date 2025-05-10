@@ -7,14 +7,11 @@ export async function POST(request: Request) {
   try {
     const data: Partial<Category> = await request.json();
     const response = await CategoriesService.createCategory(data);
-    
+
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 400 });
     }
-    
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -36,10 +33,7 @@ export async function GET(request: Request) {
     if (categoryId) {
       const response = await CategoriesService.getCategoryById(categoryId);
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 404 });
       }
       return NextResponse.json(response.data);
     }
@@ -47,31 +41,25 @@ export async function GET(request: Request) {
     if (slug) {
       const response = await CategoriesService.getCategoryBySlug(slug);
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 404 });
       }
       return NextResponse.json(response.data);
     }
 
     if (searchTerm) {
-      const response = await CategoriesService.searchCategories(searchTerm, activeOnly);
+      const response = await CategoriesService.searchCategories(
+        searchTerm,
+        activeOnly
+      );
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 500 });
       }
       return NextResponse.json(response.data);
     }
 
     const response = await CategoriesService.listCategories();
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 500 });
     }
     return NextResponse.json(response.data);
   } catch (error) {
@@ -98,10 +86,7 @@ export async function PUT(request: Request) {
     const response = await CategoriesService.updateCategory(categoryId, data);
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json(response.data);
@@ -128,10 +113,7 @@ export async function DELETE(request: Request) {
     const response = await CategoriesService.deleteCategory(categoryId);
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -141,4 +123,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

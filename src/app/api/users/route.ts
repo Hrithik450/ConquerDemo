@@ -6,14 +6,11 @@ export async function POST(request: Request) {
   try {
     const data: Partial<User> = await request.json();
     const response = await UsersService.createUser(data);
-    
+
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 400 });
     }
-    
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -31,20 +28,14 @@ export async function GET(request: Request) {
     if (userId) {
       const response = await UsersService.getUserById(userId);
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 404 });
       }
       return NextResponse.json(response.data);
     }
 
     const response = await UsersService.listUsers();
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 500 });
     }
     return NextResponse.json(response.data);
   } catch (error) {
@@ -71,10 +62,7 @@ export async function PUT(request: Request) {
     const response = await UsersService.updateUser(userId, data);
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json(response.data);
@@ -101,10 +89,7 @@ export async function DELETE(request: Request) {
     const response = await UsersService.deleteUser(userId);
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -114,4 +99,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

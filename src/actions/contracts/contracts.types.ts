@@ -9,8 +9,14 @@ export type NewContract = typeof contracts.$inferInsert;
 export const contractSchema = z.object({
   organizationId: z.string().uuid(),
   contractNumber: z.string().max(50).optional(),
-  startDate: z.date(),
-  endDate: z.date(),
+  startDate: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  endDate: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
   isActive: z.boolean().default(true),
   terms: z.string().optional(),
   notes: z.string().optional(),

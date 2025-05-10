@@ -8,21 +8,30 @@ export async function GET(request: NextRequest) {
     const brandId = searchParams.get("brandId");
 
     if (contractId && brandId) {
-      const discount = await ContractBrandDiscountsService.getContractBrandDiscount(contractId, brandId);
+      const discount =
+        await ContractBrandDiscountsService.getContractBrandDiscount(
+          contractId,
+          brandId
+        );
       return NextResponse.json(discount);
     }
 
     if (contractId) {
-      const discounts = await ContractBrandDiscountsService.getDiscountsByContractId(contractId);
+      const discounts =
+        await ContractBrandDiscountsService.getDiscountsByContractId(
+          contractId
+        );
       return NextResponse.json(discounts);
     }
 
     if (brandId) {
-      const discounts = await ContractBrandDiscountsService.getDiscountsByBrandId(brandId);
+      const discounts =
+        await ContractBrandDiscountsService.getDiscountsByBrandId(brandId);
       return NextResponse.json(discounts);
     }
 
-    const discounts = await ContractBrandDiscountsService.listContractBrandDiscounts();
+    const discounts =
+      await ContractBrandDiscountsService.listContractBrandDiscounts();
     return NextResponse.json(discounts);
   } catch (error) {
     console.error("Error getting contract brand discounts:", error);
@@ -36,7 +45,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const result = await ContractBrandDiscountsService.createContractBrandDiscount(data);
+    const result =
+      await ContractBrandDiscountsService.createContractBrandDiscount(data);
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error creating contract brand discount:", error);
@@ -52,7 +62,7 @@ export async function PUT(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const contractId = searchParams.get("contractId");
     const brandId = searchParams.get("brandId");
-    
+
     if (!contractId || !brandId) {
       return NextResponse.json(
         { success: false, error: "Missing contractId or brandId" },
@@ -61,7 +71,12 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    const result = await ContractBrandDiscountsService.updateContractBrandDiscount(contractId, brandId, data);
+    const result =
+      await ContractBrandDiscountsService.updateContractBrandDiscount(
+        contractId,
+        brandId,
+        data
+      );
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error updating contract brand discount:", error);
@@ -77,7 +92,7 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const contractId = searchParams.get("contractId");
     const brandId = searchParams.get("brandId");
-    
+
     if (!contractId || !brandId) {
       return NextResponse.json(
         { success: false, error: "Missing contractId or brandId" },
@@ -85,7 +100,11 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const result = await ContractBrandDiscountsService.deleteContractBrandDiscount(contractId, brandId);
+    const result =
+      await ContractBrandDiscountsService.deleteContractBrandDiscount(
+        contractId,
+        brandId
+      );
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error deleting contract brand discount:", error);
@@ -94,4 +113,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -1,3 +1,4 @@
+@import "./fonts.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -41,6 +42,15 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-SFthin: "SF-Pro-Thin", "sans-serif";
+  --font-SFultralight: "SF-Pro-Ultralight", "sans-serif";
+  --font-SFlight: "SF-Pro-Light", "sans-serif";
+  --font-SFregular: "SF-Pro-Regular", "sans-serif";
+  --font-SFmedium: "SF-Pro-Medium", "sans-serif";
+  --font-SFsemibold: "SF-Pro-Semibold", "sans-serif";
+  --font-SFbold: "SF-Pro-Bold", "sans-serif";
+  --font-SFblack: "SF-Pro-Black", "sans-serif";
+  --font-SFheavy: "SF-Pro-Heavy", "sans-serif";
 }
 
 :root {
@@ -119,4 +129,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+* {
+  scrollbar-width: none;
 }

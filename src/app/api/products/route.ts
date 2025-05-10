@@ -69,10 +69,7 @@ export async function PUT(request: Request) {
     const product = await ProductsService.updateProduct(productId, data);
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json(product);
@@ -96,13 +93,10 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const success = await ProductsService.deleteProduct(productId);
+    const response = await ProductsService.deleteProduct(productId);
 
-    if (!success) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+    if (!response.success) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -112,4 +106,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

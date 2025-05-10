@@ -30,7 +30,10 @@ export class ProductAttributesModel {
       .where(eq(productAttributes.attributeId, attributeId));
   }
 
-  static async updateProductAttribute(id: string, data: Partial<ProductAttribute>) {
+  static async updateProductAttribute(
+    id: string,
+    data: Partial<ProductAttribute>
+  ) {
     return await db
       .update(productAttributes)
       .set(data)

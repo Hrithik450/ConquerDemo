@@ -8,21 +8,32 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get("categoryId");
 
     if (contractId && categoryId) {
-      const discount = await ContractCategoryDiscountsService.getContractCategoryDiscount(contractId, categoryId);
+      const discount =
+        await ContractCategoryDiscountsService.getContractCategoryDiscount(
+          contractId,
+          categoryId
+        );
       return NextResponse.json(discount);
     }
 
     if (contractId) {
-      const discounts = await ContractCategoryDiscountsService.getDiscountsByContractId(contractId);
+      const discounts =
+        await ContractCategoryDiscountsService.getDiscountsByContractId(
+          contractId
+        );
       return NextResponse.json(discounts);
     }
 
     if (categoryId) {
-      const discounts = await ContractCategoryDiscountsService.getDiscountsByCategoryId(categoryId);
+      const discounts =
+        await ContractCategoryDiscountsService.getDiscountsByCategoryId(
+          categoryId
+        );
       return NextResponse.json(discounts);
     }
 
-    const discounts = await ContractCategoryDiscountsService.listContractCategoryDiscounts();
+    const discounts =
+      await ContractCategoryDiscountsService.listContractCategoryDiscounts();
     return NextResponse.json(discounts);
   } catch (error) {
     console.error("Error getting contract category discounts:", error);
@@ -36,7 +47,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const result = await ContractCategoryDiscountsService.createContractCategoryDiscount(data);
+    const result =
+      await ContractCategoryDiscountsService.createContractCategoryDiscount(
+        data
+      );
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error creating contract category discount:", error);
@@ -52,7 +66,7 @@ export async function PUT(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const contractId = searchParams.get("contractId");
     const categoryId = searchParams.get("categoryId");
-    
+
     if (!contractId || !categoryId) {
       return NextResponse.json(
         { success: false, error: "Missing contractId or categoryId" },
@@ -61,7 +75,12 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    const result = await ContractCategoryDiscountsService.updateContractCategoryDiscount(contractId, categoryId, data);
+    const result =
+      await ContractCategoryDiscountsService.updateContractCategoryDiscount(
+        contractId,
+        categoryId,
+        data
+      );
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error updating contract category discount:", error);
@@ -77,7 +96,7 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const contractId = searchParams.get("contractId");
     const categoryId = searchParams.get("categoryId");
-    
+
     if (!contractId || !categoryId) {
       return NextResponse.json(
         { success: false, error: "Missing contractId or categoryId" },
@@ -85,7 +104,11 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const result = await ContractCategoryDiscountsService.deleteContractCategoryDiscount(contractId, categoryId);
+    const result =
+      await ContractCategoryDiscountsService.deleteContractCategoryDiscount(
+        contractId,
+        categoryId
+      );
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error deleting contract category discount:", error);
@@ -94,4 +117,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

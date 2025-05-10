@@ -14,7 +14,10 @@ export async function GET(request: NextRequest) {
     }
 
     if (organizationId) {
-      const contracts = await ContractsService.listContractsByOrganization(organizationId, activeOnly);
+      const contracts = await ContractsService.listContractsByOrganization(
+        organizationId,
+        activeOnly
+      );
       return NextResponse.json(contracts);
     }
 
@@ -49,7 +52,7 @@ export async function PUT(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    
+
     if (!id) {
       return NextResponse.json(
         { success: false, error: "Missing contract ID" },
@@ -73,7 +76,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    
+
     if (!id) {
       return NextResponse.json(
         { success: false, error: "Missing contract ID" },
@@ -90,4 +93,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

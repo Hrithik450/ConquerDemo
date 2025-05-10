@@ -18,14 +18,14 @@ export class UsersModel {
   }
 
   static async getUserByEmail(email: string): Promise<User | null> {
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email));
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     return user || null;
   }
 
-  static async updateUser(userId: string, data: Partial<NewUser>): Promise<User | null> {
+  static async updateUser(
+    userId: string,
+    data: Partial<NewUser>
+  ): Promise<User | null> {
     const [user] = await db
       .update(users)
       .set({ ...data, updatedAt: new Date() })
@@ -35,9 +35,7 @@ export class UsersModel {
   }
 
   static async deleteUser(userId: string): Promise<boolean> {
-    const result = await db
-      .delete(users)
-      .where(eq(users.userId, userId));
+    const result = await db.delete(users).where(eq(users.userId, userId));
     return result.count > 0;
   }
 

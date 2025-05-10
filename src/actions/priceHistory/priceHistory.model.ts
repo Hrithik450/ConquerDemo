@@ -4,7 +4,9 @@ import { eq, and, lte, gte, or, desc, isNull } from "drizzle-orm";
 import type { NewPriceHistory, PriceHistory } from "./priceHistory.types";
 
 export class PriceHistoryModel {
-  static async createPriceHistory(data: NewPriceHistory): Promise<PriceHistory> {
+  static async createPriceHistory(
+    data: NewPriceHistory
+  ): Promise<PriceHistory> {
     const [history] = await db.insert(priceHistory).values(data).returning();
     return history;
   }
@@ -17,7 +19,9 @@ export class PriceHistoryModel {
     return history || null;
   }
 
-  static async getCurrentPriceHistoryByVariantId(variantId: string): Promise<PriceHistory | null> {
+  static async getCurrentPriceHistoryByVariantId(
+    variantId: string
+  ): Promise<PriceHistory | null> {
     const now = new Date();
     const [history] = await db
       .select()
@@ -37,7 +41,9 @@ export class PriceHistoryModel {
     return history || null;
   }
 
-  static async getPriceHistoryByVariantId(variantId: string): Promise<PriceHistory[]> {
+  static async getPriceHistoryByVariantId(
+    variantId: string
+  ): Promise<PriceHistory[]> {
     return await db
       .select()
       .from(priceHistory)
@@ -76,13 +82,13 @@ export class PriceHistoryModel {
   }
 
   static async deletePriceHistory(id: string): Promise<boolean> {
-    const result = await db
-      .delete(priceHistory)
-      .where(eq(priceHistory.id, id));
+    const result = await db.delete(priceHistory).where(eq(priceHistory.id, id));
     return result.count > 0;
   }
 
-  static async deletePriceHistoryByVariantId(variantId: string): Promise<boolean> {
+  static async deletePriceHistoryByVariantId(
+    variantId: string
+  ): Promise<boolean> {
     const result = await db
       .delete(priceHistory)
       .where(eq(priceHistory.variantId, variantId));

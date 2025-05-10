@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuditLogsByAction, listAuditLogs } from "@/actions/auditLogs/auditLogs.service";
+import {
+  getAuditLogsByAction,
+  listAuditLogs,
+} from "@/actions/auditLogs/auditLogs.service";
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,4 +23,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createOrderStatusHistory, getOrderStatusHistoryByOrderId } from "@/actions/orderStatusHistory/orderStatusHistory.service";
+import {
+  createOrderStatusHistory,
+  getOrderStatusHistoryByOrderId,
+} from "@/actions/orderStatusHistory/orderStatusHistory.service";
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,4 +38,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
+
+// needed put function

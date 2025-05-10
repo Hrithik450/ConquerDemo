@@ -5,15 +5,14 @@ import type { ProductAttribute } from "@/actions/productAttributes/productAttrib
 export async function POST(request: Request) {
   try {
     const data: Partial<ProductAttribute> = await request.json();
-    const response = await ProductAttributesService.createProductAttribute(data);
-    
+    const response = await ProductAttributesService.createProductAttribute(
+      data
+    );
+
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 400 });
     }
-    
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -31,44 +30,38 @@ export async function GET(request: Request) {
     const attributeId = searchParams.get("attributeId");
 
     if (productAttributeId) {
-      const response = await ProductAttributesService.getProductAttributeById(productAttributeId);
+      const response = await ProductAttributesService.getProductAttributeById(
+        productAttributeId
+      );
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 404 });
       }
       return NextResponse.json(response.data);
     }
 
     if (productId) {
-      const response = await ProductAttributesService.getProductAttributesByProduct(productId);
+      const response =
+        await ProductAttributesService.getProductAttributesByProduct(productId);
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 500 });
       }
       return NextResponse.json(response.data);
     }
 
     if (attributeId) {
-      const response = await ProductAttributesService.getProductAttributesByAttribute(attributeId);
-      if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 500 }
+      const response =
+        await ProductAttributesService.getProductAttributesByAttribute(
+          attributeId
         );
+      if (!response.success) {
+        return NextResponse.json({ error: response.error }, { status: 500 });
       }
       return NextResponse.json(response.data);
     }
 
     const response = await ProductAttributesService.listProductAttributes();
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 500 });
     }
     return NextResponse.json(response.data);
   } catch (error) {
@@ -92,13 +85,13 @@ export async function PUT(request: Request) {
     }
 
     const data = await request.json();
-    const response = await ProductAttributesService.updateProductAttribute(productAttributeId, data);
+    const response = await ProductAttributesService.updateProductAttribute(
+      productAttributeId,
+      data
+    );
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json(response.data);
@@ -122,13 +115,12 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const response = await ProductAttributesService.deleteProductAttribute(productAttributeId);
+    const response = await ProductAttributesService.deleteProductAttribute(
+      productAttributeId
+    );
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -138,4 +130,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

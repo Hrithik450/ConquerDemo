@@ -25,10 +25,7 @@ export async function GET(request: Request) {
     if (orderId) {
       const order = await OrdersService.getOrderById(orderId);
       if (!order) {
-        return NextResponse.json(
-          { error: "Order not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Order not found" }, { status: 404 });
       }
       return NextResponse.json(order);
     }
@@ -69,10 +66,7 @@ export async function PUT(request: Request) {
     const order = await OrdersService.updateOrder(orderId, data);
 
     if (!order) {
-      return NextResponse.json(
-        { error: "Order not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
     return NextResponse.json(order);
@@ -99,10 +93,7 @@ export async function DELETE(request: Request) {
     const success = await OrdersService.deleteOrder(orderId);
 
     if (!success) {
-      return NextResponse.json(
-        { error: "Order not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -112,4 +103,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

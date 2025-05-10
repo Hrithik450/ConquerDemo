@@ -6,14 +6,11 @@ export async function POST(request: Request) {
   try {
     const data: Partial<Organization> = await request.json();
     const response = await OrganizationsService.createOrganization(data);
-    
+
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 400 });
     }
-    
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -29,22 +26,18 @@ export async function GET(request: Request) {
     const organizationId = searchParams.get("organizationId");
 
     if (organizationId) {
-      const response = await OrganizationsService.getOrganizationById(organizationId);
+      const response = await OrganizationsService.getOrganizationById(
+        organizationId
+      );
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 404 });
       }
       return NextResponse.json(response.data);
     }
 
     const response = await OrganizationsService.listOrganizations();
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 500 });
     }
     return NextResponse.json(response.data);
   } catch (error) {
@@ -68,13 +61,13 @@ export async function PUT(request: Request) {
     }
 
     const data = await request.json();
-    const response = await OrganizationsService.updateOrganization(organizationId, data);
+    const response = await OrganizationsService.updateOrganization(
+      organizationId,
+      data
+    );
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json(response.data);
@@ -98,13 +91,12 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const response = await OrganizationsService.deleteOrganization(organizationId);
+    const response = await OrganizationsService.deleteOrganization(
+      organizationId
+    );
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -114,4 +106,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

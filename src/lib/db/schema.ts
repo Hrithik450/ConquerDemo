@@ -325,7 +325,7 @@ export const attributes = pgTable(
   "attributes",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    name: varchar("attributeName", { length: 100 }).notNull().unique(),
+    name: varchar("name", { length: 100 }).notNull().unique(),
     slug: varchar("slug", { length: 100 }).notNull().unique(),
     description: text("description"),
     createdAt: timestamp("createdAt", { withTimezone: true })
@@ -355,7 +355,7 @@ export const attributeValues = pgTable(
     attributeId: uuid("attributeId")
       .notNull()
       .references(() => attributes.id, { onDelete: "restrict" }),
-    value: varchar("attributeValue", { length: 255 }).notNull(),
+    value: varchar("value", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }),
     otherData: jsonb("otherData"), // colorHex // Example: if attribute is 'Color'
     createdAt: timestamp("createdAt", { withTimezone: true })

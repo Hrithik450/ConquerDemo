@@ -6,14 +6,11 @@ export async function POST(request: Request) {
   try {
     const data: Partial<Attribute> = await request.json();
     const response = await AttributesService.createAttribute(data);
-    
+
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 400 });
     }
-    
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -31,20 +28,14 @@ export async function GET(request: Request) {
     if (attributeId) {
       const response = await AttributesService.getAttributeById(attributeId);
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 404 });
       }
       return NextResponse.json(response.data);
     }
 
     const response = await AttributesService.listAttributes();
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 500 });
     }
     return NextResponse.json(response.data);
   } catch (error) {
@@ -71,10 +62,7 @@ export async function PUT(request: Request) {
     const response = await AttributesService.updateAttribute(attributeId, data);
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json(response.data);
@@ -101,10 +89,7 @@ export async function DELETE(request: Request) {
     const response = await AttributesService.deleteAttribute(attributeId);
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -114,4 +99,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

@@ -8,7 +8,7 @@ import type {
 import { revalidatePath } from "next/cache";
 
 //fix it later with next auth or something
-function auth(): { userId: any; orgId: any; } {
+function auth(): { userId: any; orgId: any } {
   throw new Error("Function not implemented.");
 }
 
@@ -16,15 +16,15 @@ export async function createOrderStatusHistory(
   data: unknown
 ): Promise<OrderStatusHistoryResponse> {
   try {
-    const { userId, orgId } = auth();
-    if (!userId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId, orgId } = auth();
+    // if (!userId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const validatedData = orderStatusHistorySchema.parse(data);
     const history = await OrderStatusHistoryModel.createOrderStatusHistory({
       ...validatedData,
-      changedBy: userId,
+      // changedBy: userId,
     });
 
     revalidatePath("/orders");
@@ -39,10 +39,10 @@ export async function getOrderStatusHistoryById(
   historyId: string
 ): Promise<OrderStatusHistoryResponse> {
   try {
-    const { userId, orgId } = auth();
-    if (!userId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId, orgId } = auth();
+    // if (!userId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const history = await OrderStatusHistoryModel.getOrderStatusHistoryById(
       historyId
@@ -63,14 +63,13 @@ export async function getOrderStatusHistoryByOrderId(
   orderId: string
 ): Promise<OrderStatusHistoriesResponse> {
   try {
-    const { userId, orgId } = auth();
-    if (!userId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId, orgId } = auth();
+    // if (!userId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
-    const history = await OrderStatusHistoryModel.getOrderStatusHistoryByOrderId(
-      orderId
-    );
+    const history =
+      await OrderStatusHistoryModel.getOrderStatusHistoryByOrderId(orderId);
 
     return { success: true, data: history };
   } catch (error) {
@@ -83,10 +82,10 @@ export async function getOrderStatusHistoryByStatus(
   status: string
 ): Promise<OrderStatusHistoriesResponse> {
   try {
-    const { userId, orgId } = auth();
-    if (!userId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId, orgId } = auth();
+    // if (!userId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const history = await OrderStatusHistoryModel.getOrderStatusHistoryByStatus(
       status
@@ -103,10 +102,10 @@ export async function getOrderStatusHistoryByUser(
   userId: string
 ): Promise<OrderStatusHistoriesResponse> {
   try {
-    const { userId: authUserId, orgId } = auth();
-    if (!authUserId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId: authUserId, orgId } = auth();
+    // if (!authUserId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const history = await OrderStatusHistoryModel.getOrderStatusHistoryByUser(
       userId
@@ -124,10 +123,10 @@ export async function updateOrderStatusHistory(
   data: unknown
 ): Promise<OrderStatusHistoryResponse> {
   try {
-    const { userId, orgId } = auth();
-    if (!userId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId, orgId } = auth();
+    // if (!userId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const history = await OrderStatusHistoryModel.getOrderStatusHistoryById(
       historyId
@@ -138,10 +137,11 @@ export async function updateOrderStatusHistory(
     }
 
     const validatedData = orderStatusHistorySchema.partial().parse(data);
-    const updatedHistory = await OrderStatusHistoryModel.updateOrderStatusHistory(
-      historyId,
-      validatedData
-    );
+    const updatedHistory =
+      await OrderStatusHistoryModel.updateOrderStatusHistory(
+        historyId,
+        validatedData
+      );
 
     if (!updatedHistory) {
       return { success: false, error: "Failed to update order status history" };
@@ -159,10 +159,10 @@ export async function deleteOrderStatusHistory(
   historyId: string
 ): Promise<OrderStatusHistoryResponse> {
   try {
-    const { userId, orgId } = auth();
-    if (!userId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId, orgId } = auth();
+    // if (!userId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const history = await OrderStatusHistoryModel.getOrderStatusHistoryById(
       historyId
@@ -190,10 +190,10 @@ export async function deleteOrderStatusHistory(
 
 export async function listOrderStatusHistory(): Promise<OrderStatusHistoriesResponse> {
   try {
-    const { userId, orgId } = auth();
-    if (!userId || !orgId) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const { userId, orgId } = auth();
+    // if (!userId || !orgId) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const history = await OrderStatusHistoryModel.listOrderStatusHistory();
     return { success: true, data: history };

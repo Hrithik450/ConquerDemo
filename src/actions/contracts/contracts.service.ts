@@ -1,16 +1,24 @@
 import { ContractsModel } from "./contracts.model";
 import { contractSchema } from "./contracts.types";
-import type { Contract, ContractResponse, ContractsResponse } from "./contracts.types";
+import type {
+  Contract,
+  ContractResponse,
+  ContractsResponse,
+} from "./contracts.types";
 
 export class ContractsService {
-  static async createContract(data: Partial<Contract>): Promise<ContractResponse> {
+  static async createContract(
+    data: Partial<Contract>
+  ): Promise<ContractResponse> {
     try {
       // Validate input data
       const validatedData = contractSchema.parse(data);
-      
+
       // Check if contract number already exists
       if (validatedData.contractNumber) {
-        const existingContract = await ContractsModel.getContractByNumber(validatedData.contractNumber);
+        const existingContract = await ContractsModel.getContractByNumber(
+          validatedData.contractNumber
+        );
         if (existingContract) {
           return {
             success: false,
@@ -20,7 +28,10 @@ export class ContractsService {
       }
 
       // Check for overlapping contracts
-      const activeContract = await ContractsModel.getActiveContractByOrganization(validatedData.organizationId);
+      const activeContract =
+        await ContractsModel.getActiveContractByOrganization(
+          validatedData.organizationId
+        );
       if (activeContract) {
         return {
           success: false,
@@ -37,7 +48,8 @@ export class ContractsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to create contract",
+        error:
+          error instanceof Error ? error.message : "Failed to create contract",
       };
     }
   }
@@ -58,7 +70,8 @@ export class ContractsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get contract",
+        error:
+          error instanceof Error ? error.message : "Failed to get contract",
       };
     }
   }
@@ -70,8 +83,11 @@ export class ContractsService {
     try {
       // Validate input data
       const validatedData = contractSchema.partial().parse(data);
-      
-      const contract = await ContractsModel.updateContract(contractId, validatedData);
+
+      const contract = await ContractsModel.updateContract(
+        contractId,
+        validatedData
+      );
       if (!contract) {
         return {
           success: false,
@@ -85,7 +101,8 @@ export class ContractsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to update contract",
+        error:
+          error instanceof Error ? error.message : "Failed to update contract",
       };
     }
   }
@@ -105,7 +122,8 @@ export class ContractsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to delete contract",
+        error:
+          error instanceof Error ? error.message : "Failed to delete contract",
       };
     }
   }
@@ -125,7 +143,8 @@ export class ContractsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to list contracts",
+        error:
+          error instanceof Error ? error.message : "Failed to list contracts",
       };
     }
   }

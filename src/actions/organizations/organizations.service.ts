@@ -1,15 +1,23 @@
 import { OrganizationsModel } from "./organizations.model";
 import { organizationSchema } from "./organizations.types";
-import type { Organization, OrganizationResponse, OrganizationsResponse } from "./organizations.types";
+import type {
+  Organization,
+  OrganizationResponse,
+  OrganizationsResponse,
+} from "./organizations.types";
 
 export class OrganizationsService {
-  static async createOrganization(data: Partial<Organization>): Promise<OrganizationResponse> {
+  static async createOrganization(
+    data: Partial<Organization>
+  ): Promise<OrganizationResponse> {
     try {
       // Validate input data
       const validatedData = organizationSchema.parse(data);
-      
+
       // Check if organization already exists
-      const existingOrg = await OrganizationsModel.getOrganizationByName(validatedData.name);
+      const existingOrg = await OrganizationsModel.getOrganizationByName(
+        validatedData.name
+      );
       if (existingOrg) {
         return {
           success: false,
@@ -18,7 +26,9 @@ export class OrganizationsService {
       }
 
       // Create new organization
-      const organization = await OrganizationsModel.createOrganization(validatedData);
+      const organization = await OrganizationsModel.createOrganization(
+        validatedData
+      );
       return {
         success: true,
         data: organization,
@@ -26,14 +36,21 @@ export class OrganizationsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to create organization",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to create organization",
       };
     }
   }
 
-  static async getOrganizationById(organizationId: string): Promise<OrganizationResponse> {
+  static async getOrganizationById(
+    organizationId: string
+  ): Promise<OrganizationResponse> {
     try {
-      const organization = await OrganizationsModel.getOrganizationById(organizationId);
+      const organization = await OrganizationsModel.getOrganizationById(
+        organizationId
+      );
       if (!organization) {
         return {
           success: false,
@@ -47,7 +64,8 @@ export class OrganizationsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get organization",
+        error:
+          error instanceof Error ? error.message : "Failed to get organization",
       };
     }
   }
@@ -59,8 +77,11 @@ export class OrganizationsService {
     try {
       // Validate input data
       const validatedData = organizationSchema.partial().parse(data);
-      
-      const organization = await OrganizationsModel.updateOrganization(organizationId, validatedData);
+
+      const organization = await OrganizationsModel.updateOrganization(
+        organizationId,
+        validatedData
+      );
       if (!organization) {
         return {
           success: false,
@@ -74,14 +95,21 @@ export class OrganizationsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to update organization",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to update organization",
       };
     }
   }
 
-  static async deleteOrganization(organizationId: string): Promise<OrganizationResponse> {
+  static async deleteOrganization(
+    organizationId: string
+  ): Promise<OrganizationResponse> {
     try {
-      const success = await OrganizationsModel.deleteOrganization(organizationId);
+      const success = await OrganizationsModel.deleteOrganization(
+        organizationId
+      );
       if (!success) {
         return {
           success: false,
@@ -94,12 +122,17 @@ export class OrganizationsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to delete organization",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete organization",
       };
     }
   }
 
-  static async listOrganizations(activeOnly: boolean = false): Promise<OrganizationsResponse> {
+  static async listOrganizations(
+    activeOnly: boolean = false
+  ): Promise<OrganizationsResponse> {
     try {
       const organizations = activeOnly
         ? await OrganizationsModel.listActiveOrganizations()
@@ -111,7 +144,10 @@ export class OrganizationsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to list organizations",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to list organizations",
       };
     }
   }

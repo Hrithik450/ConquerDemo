@@ -13,8 +13,14 @@ export const organizationSchema = z.object({
   phone: z.string().max(20).optional(),
   address: z.string().optional(),
   isActive: z.boolean().default(true),
-  contractStartDate: z.date().optional(),
-  contractEndDate: z.date().optional(),
+  contractStartDate: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  contractEndDate: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
 });
 
 // Response types for API

@@ -6,14 +6,11 @@ export async function POST(request: Request) {
   try {
     const data: Partial<AttributeValue> = await request.json();
     const response = await AttributeValuesService.createAttributeValue(data);
-    
+
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 400 });
     }
-    
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -30,33 +27,29 @@ export async function GET(request: Request) {
     const attributeId = searchParams.get("attributeId");
 
     if (attributeValueId) {
-      const response = await AttributeValuesService.getAttributeValueById(attributeValueId);
+      const response = await AttributeValuesService.getAttributeValueById(
+        attributeValueId
+      );
       if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: response.error }, { status: 404 });
       }
       return NextResponse.json(response.data);
     }
 
     if (attributeId) {
-      const response = await AttributeValuesService.getAttributeValuesByAttributeId(attributeId);
-      if (!response.success) {
-        return NextResponse.json(
-          { error: response.error },
-          { status: 500 }
+      const response =
+        await AttributeValuesService.getAttributeValuesByAttributeId(
+          attributeId
         );
+      if (!response.success) {
+        return NextResponse.json({ error: response.error }, { status: 500 });
       }
       return NextResponse.json(response.data);
     }
 
     const response = await AttributeValuesService.listAttributeValues();
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 500 });
     }
     return NextResponse.json(response.data);
   } catch (error) {
@@ -80,13 +73,13 @@ export async function PUT(request: Request) {
     }
 
     const data = await request.json();
-    const response = await AttributeValuesService.updateAttributeValue(attributeValueId, data);
+    const response = await AttributeValuesService.updateAttributeValue(
+      attributeValueId,
+      data
+    );
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json(response.data);
@@ -110,13 +103,12 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const response = await AttributeValuesService.deleteAttributeValue(attributeValueId);
+    const response = await AttributeValuesService.deleteAttributeValue(
+      attributeValueId
+    );
 
     if (!response.success) {
-      return NextResponse.json(
-        { error: response.error },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: response.error }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -126,4 +118,4 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

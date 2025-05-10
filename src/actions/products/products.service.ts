@@ -1,15 +1,21 @@
 import { ProductsModel } from "./products.model";
 import { productSchema } from "./products.types";
-import type { Product, ProductResponse, ProductsResponse } from "./products.types";
+import type {
+  Product,
+  ProductResponse,
+  ProductsResponse,
+} from "./products.types";
 
 export class ProductsService {
   static async createProduct(data: Partial<Product>): Promise<ProductResponse> {
     try {
       // Validate input data
       const validatedData = productSchema.parse(data);
-      
+
       // Check if product already exists
-      const existingProduct = await ProductsModel.getProductBySlug(validatedData.slug);
+      const existingProduct = await ProductsModel.getProductBySlug(
+        validatedData.slug
+      );
       if (existingProduct) {
         return {
           success: false,
@@ -26,7 +32,8 @@ export class ProductsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to create product",
+        error:
+          error instanceof Error ? error.message : "Failed to create product",
       };
     }
   }
@@ -52,7 +59,9 @@ export class ProductsService {
     }
   }
 
-  static async getProductsByBrandId(brandId: string): Promise<ProductsResponse> {
+  static async getProductsByBrandId(
+    brandId: string
+  ): Promise<ProductsResponse> {
     try {
       const products = await ProductsModel.getProductsByBrandId(brandId);
       return {
@@ -62,12 +71,17 @@ export class ProductsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get products for brand",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get products for brand",
       };
     }
   }
 
-  static async getProductsByCategoryId(categoryId: string): Promise<ProductsResponse> {
+  static async getProductsByCategoryId(
+    categoryId: string
+  ): Promise<ProductsResponse> {
     try {
       const products = await ProductsModel.getProductsByCategoryId(categoryId);
       return {
@@ -77,16 +91,22 @@ export class ProductsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to get products for category",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to get products for category",
       };
     }
   }
 
-  static async updateProduct(id: string, data: Partial<Product>): Promise<ProductResponse> {
+  static async updateProduct(
+    id: string,
+    data: Partial<Product>
+  ): Promise<ProductResponse> {
     try {
       // Validate input data
       const validatedData = productSchema.partial().parse(data);
-      
+
       const product = await ProductsModel.updateProduct(id, validatedData);
       if (!product) {
         return {
@@ -101,7 +121,8 @@ export class ProductsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to update product",
+        error:
+          error instanceof Error ? error.message : "Failed to update product",
       };
     }
   }
@@ -121,7 +142,8 @@ export class ProductsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to delete product",
+        error:
+          error instanceof Error ? error.message : "Failed to delete product",
       };
     }
   }
@@ -136,7 +158,8 @@ export class ProductsService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to list products",
+        error:
+          error instanceof Error ? error.message : "Failed to list products",
       };
     }
   }

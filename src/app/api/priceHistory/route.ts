@@ -24,7 +24,9 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(history);
       }
 
-      const history = await PriceHistoryService.getPriceHistoryByVariantId(variantId);
+      const history = await PriceHistoryService.getPriceHistoryByVariantId(
+        variantId
+      );
       return NextResponse.json(history);
     }
 
@@ -90,7 +92,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (variantId) {
-      const result = await PriceHistoryService.deletePriceHistoryByVariantId(variantId);
+      const result = await PriceHistoryService.deletePriceHistoryByVariantId(
+        variantId
+      );
       return NextResponse.json(result);
     }
 
@@ -105,4 +109,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

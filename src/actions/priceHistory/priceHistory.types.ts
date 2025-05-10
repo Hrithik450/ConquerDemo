@@ -10,8 +10,14 @@ export const priceHistorySchema = z.object({
   variantId: z.string().uuid(),
   price: z.number().transform((val) => val.toString()),
   salePrice: z.number().transform((val) => val.toString()),
-  effectiveFrom: z.date().optional(),
-  effectiveTo: z.date().optional(),
+  effectiveFrom: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  effectiveTo: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
   history: z.record(z.any()).optional(),
   updatedBy: z.string().uuid().optional(),
 });

@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
 import { contractProductAttributeValueRestrictions } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import type { 
+import type {
   ContractProductAttributeValueRestriction,
-  NewContractProductAttributeValueRestriction 
+  NewContractProductAttributeValueRestriction,
 } from "./contractProductAttributeValueRestrictions.types";
 
 export class ContractProductAttributeValueRestrictionsModel {
@@ -30,32 +30,50 @@ export class ContractProductAttributeValueRestrictionsModel {
         and(
           eq(contractProductAttributeValueRestrictions.contractId, contractId),
           eq(contractProductAttributeValueRestrictions.productId, productId),
-          eq(contractProductAttributeValueRestrictions.attributeId, attributeId),
-          eq(contractProductAttributeValueRestrictions.attributeValueId, attributeValueId)
+          eq(
+            contractProductAttributeValueRestrictions.attributeId,
+            attributeId
+          ),
+          eq(
+            contractProductAttributeValueRestrictions.attributeValueId,
+            attributeValueId
+          )
         )
       );
     return restriction || null;
   }
 
-  static async getRestrictionsByContractId(contractId: string): Promise<ContractProductAttributeValueRestriction[]> {
+  static async getRestrictionsByContractId(
+    contractId: string
+  ): Promise<ContractProductAttributeValueRestriction[]> {
     return await db
       .select()
       .from(contractProductAttributeValueRestrictions)
-      .where(eq(contractProductAttributeValueRestrictions.contractId, contractId));
+      .where(
+        eq(contractProductAttributeValueRestrictions.contractId, contractId)
+      );
   }
 
-  static async getRestrictionsByProductId(productId: string): Promise<ContractProductAttributeValueRestriction[]> {
+  static async getRestrictionsByProductId(
+    productId: string
+  ): Promise<ContractProductAttributeValueRestriction[]> {
     return await db
       .select()
       .from(contractProductAttributeValueRestrictions)
-      .where(eq(contractProductAttributeValueRestrictions.productId, productId));
+      .where(
+        eq(contractProductAttributeValueRestrictions.productId, productId)
+      );
   }
 
-  static async getRestrictionsByAttributeId(attributeId: string): Promise<ContractProductAttributeValueRestriction[]> {
+  static async getRestrictionsByAttributeId(
+    attributeId: string
+  ): Promise<ContractProductAttributeValueRestriction[]> {
     return await db
       .select()
       .from(contractProductAttributeValueRestrictions)
-      .where(eq(contractProductAttributeValueRestrictions.attributeId, attributeId));
+      .where(
+        eq(contractProductAttributeValueRestrictions.attributeId, attributeId)
+      );
   }
 
   static async updateContractProductAttributeValueRestriction(
@@ -72,8 +90,14 @@ export class ContractProductAttributeValueRestrictionsModel {
         and(
           eq(contractProductAttributeValueRestrictions.contractId, contractId),
           eq(contractProductAttributeValueRestrictions.productId, productId),
-          eq(contractProductAttributeValueRestrictions.attributeId, attributeId),
-          eq(contractProductAttributeValueRestrictions.attributeValueId, attributeValueId)
+          eq(
+            contractProductAttributeValueRestrictions.attributeId,
+            attributeId
+          ),
+          eq(
+            contractProductAttributeValueRestrictions.attributeValueId,
+            attributeValueId
+          )
         )
       )
       .returning();
@@ -92,14 +116,22 @@ export class ContractProductAttributeValueRestrictionsModel {
         and(
           eq(contractProductAttributeValueRestrictions.contractId, contractId),
           eq(contractProductAttributeValueRestrictions.productId, productId),
-          eq(contractProductAttributeValueRestrictions.attributeId, attributeId),
-          eq(contractProductAttributeValueRestrictions.attributeValueId, attributeValueId)
+          eq(
+            contractProductAttributeValueRestrictions.attributeId,
+            attributeId
+          ),
+          eq(
+            contractProductAttributeValueRestrictions.attributeValueId,
+            attributeValueId
+          )
         )
       );
-    return result.length > 0;
+    return result.count > 0;
   }
 
-  static async listContractProductAttributeValueRestrictions(): Promise<ContractProductAttributeValueRestriction[]> {
+  static async listContractProductAttributeValueRestrictions(): Promise<
+    ContractProductAttributeValueRestriction[]
+  > {
     return await db.select().from(contractProductAttributeValueRestrictions);
   }
 }
