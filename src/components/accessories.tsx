@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import WideCard from "./wideCard";
+import WideCard from "./widecard";
 import Headings from "./headings";
 import { productCards } from "@/lib/utils/constant";
 import Productcard from "./productcard";

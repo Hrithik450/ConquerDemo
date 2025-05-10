@@ -2,7 +2,7 @@
 
 import { appleExperienceCards } from "@/lib/utils/constant";
 import React, { useRef } from "react";
-import WideCard from "./wideCard";
+import WideCard from "./widecard";
 import Headings from "./headings";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";

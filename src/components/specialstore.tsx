@@ -1,6 +1,6 @@
 import React from "react";
 import Headings from "./headings";
-import WideCard from "./wideCard";
+import WideCard from "./widecard";
 
 const SpecialStore = () => {
   return (

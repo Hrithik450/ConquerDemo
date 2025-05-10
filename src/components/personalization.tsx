@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import Productcard from "./productcard";
 import { personalizationProducts } from "@/lib/utils/constant";
-import WideCard from "./wideCard";
+import WideCard from "./widecard";
 import Headings from "./headings";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
