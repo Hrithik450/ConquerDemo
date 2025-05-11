@@ -10,27 +10,27 @@ export class CartsModel {
   }
 
   static async getCartById(id: string): Promise<Cart | null> {
-    const [cart] = await db
-      .select()
-      .from(carts)
-      .where(eq(carts.cartId, id));
+    const [cart] = await db.select().from(carts).where(eq(carts.cartId, id));
     return cart || null;
   }
 
-  static async getCartByUser(userId: string, organizationId: string): Promise<Cart | null> {
+  static async getCartByUser(
+    userId: string,
+    organizationId: string
+  ): Promise<Cart | null> {
     const [cart] = await db
       .select()
       .from(carts)
       .where(
-        and(
-          eq(carts.userId, userId),
-          eq(carts.organizationId, organizationId)
-        )
+        and(eq(carts.userId, userId), eq(carts.organizationId, organizationId))
       );
     return cart || null;
   }
 
-  static async updateCart(id: string, data: Partial<NewCart>): Promise<Cart | null> {
+  static async updateCart(
+    id: string,
+    data: Partial<NewCart>
+  ): Promise<Cart | null> {
     const [cart] = await db
       .update(carts)
       .set({ ...data, updatedAt: new Date() })
@@ -40,20 +40,17 @@ export class CartsModel {
   }
 
   static async deleteCart(id: string): Promise<boolean> {
-    const result = await db
-      .delete(carts)
-      .where(eq(carts.cartId, id));
-    return result.count > 0;
+    const result = await db.delete(carts).where(eq(carts.cartId, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listCartsByUser(userId: string): Promise<Cart[]> {
-    return await db
-      .select()
-      .from(carts)
-      .where(eq(carts.userId, userId));
+    return await db.select().from(carts).where(eq(carts.userId, userId));
   }
 
-  static async listCartsByOrganization(organizationId: string): Promise<Cart[]> {
+  static async listCartsByOrganization(
+    organizationId: string
+  ): Promise<Cart[]> {
     return await db
       .select()
       .from(carts)

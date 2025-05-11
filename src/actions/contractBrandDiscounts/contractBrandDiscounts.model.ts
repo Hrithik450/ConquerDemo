@@ -1,15 +1,26 @@
 import { db } from "@/lib/db";
 import { contractBrandDiscounts } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
-import type { NewContractBrandDiscount, ContractBrandDiscount } from "./contractBrandDiscounts.types";
+import type {
+  NewContractBrandDiscount,
+  ContractBrandDiscount,
+} from "./contractBrandDiscounts.types";
 
 export class ContractBrandDiscountsModel {
-  static async createContractBrandDiscount(data: NewContractBrandDiscount): Promise<ContractBrandDiscount> {
-    const [discount] = await db.insert(contractBrandDiscounts).values(data).returning();
+  static async createContractBrandDiscount(
+    data: NewContractBrandDiscount
+  ): Promise<ContractBrandDiscount> {
+    const [discount] = await db
+      .insert(contractBrandDiscounts)
+      .values(data)
+      .returning();
     return discount;
   }
 
-  static async getContractBrandDiscount(contractId: string, brandId: string): Promise<ContractBrandDiscount | null> {
+  static async getContractBrandDiscount(
+    contractId: string,
+    brandId: string
+  ): Promise<ContractBrandDiscount | null> {
     const [discount] = await db
       .select()
       .from(contractBrandDiscounts)
@@ -22,14 +33,18 @@ export class ContractBrandDiscountsModel {
     return discount || null;
   }
 
-  static async getDiscountsByContractId(contractId: string): Promise<ContractBrandDiscount[]> {
+  static async getDiscountsByContractId(
+    contractId: string
+  ): Promise<ContractBrandDiscount[]> {
     return await db
       .select()
       .from(contractBrandDiscounts)
       .where(eq(contractBrandDiscounts.contractId, contractId));
   }
 
-  static async getDiscountsByBrandId(brandId: string): Promise<ContractBrandDiscount[]> {
+  static async getDiscountsByBrandId(
+    brandId: string
+  ): Promise<ContractBrandDiscount[]> {
     return await db
       .select()
       .from(contractBrandDiscounts)
@@ -54,7 +69,10 @@ export class ContractBrandDiscountsModel {
     return discount || null;
   }
 
-  static async deleteContractBrandDiscount(contractId: string, brandId: string): Promise<boolean> {
+  static async deleteContractBrandDiscount(
+    contractId: string,
+    brandId: string
+  ): Promise<boolean> {
     const result = await db
       .delete(contractBrandDiscounts)
       .where(
@@ -63,7 +81,7 @@ export class ContractBrandDiscountsModel {
           eq(contractBrandDiscounts.brandId, brandId)
         )
       );
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listContractBrandDiscounts(): Promise<ContractBrandDiscount[]> {

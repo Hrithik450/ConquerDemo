@@ -1,13 +1,19 @@
 import { db } from "@/lib/db";
 import { productVariantAttributeValues } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import type { NewProductVariantAttributeValue, ProductVariantAttributeValue } from "./productVariantAttributeValues.types";
+import type {
+  NewProductVariantAttributeValue,
+  ProductVariantAttributeValue,
+} from "./productVariantAttributeValues.types";
 
 export class ProductVariantAttributeValuesModel {
   static async createProductVariantAttributeValue(
     data: NewProductVariantAttributeValue
   ): Promise<ProductVariantAttributeValue> {
-    const [value] = await db.insert(productVariantAttributeValues).values(data).returning();
+    const [value] = await db
+      .insert(productVariantAttributeValues)
+      .values(data)
+      .returning();
     return value;
   }
 
@@ -21,7 +27,10 @@ export class ProductVariantAttributeValuesModel {
       .where(
         and(
           eq(productVariantAttributeValues.productVariantId, productVariantId),
-          eq(productVariantAttributeValues.productAttributeValueId, productAttributeValueId)
+          eq(
+            productVariantAttributeValues.productAttributeValueId,
+            productAttributeValueId
+          )
         )
       );
     return value || null;
@@ -33,7 +42,9 @@ export class ProductVariantAttributeValuesModel {
     return await db
       .select()
       .from(productVariantAttributeValues)
-      .where(eq(productVariantAttributeValues.productVariantId, productVariantId));
+      .where(
+        eq(productVariantAttributeValues.productVariantId, productVariantId)
+      );
   }
 
   static async getProductVariantAttributeValuesByAttributeValueId(
@@ -42,7 +53,12 @@ export class ProductVariantAttributeValuesModel {
     return await db
       .select()
       .from(productVariantAttributeValues)
-      .where(eq(productVariantAttributeValues.productAttributeValueId, productAttributeValueId));
+      .where(
+        eq(
+          productVariantAttributeValues.productAttributeValueId,
+          productAttributeValueId
+        )
+      );
   }
 
   static async deleteProductVariantAttributeValue(
@@ -54,16 +70,23 @@ export class ProductVariantAttributeValuesModel {
       .where(
         and(
           eq(productVariantAttributeValues.productVariantId, productVariantId),
-          eq(productVariantAttributeValues.productAttributeValueId, productAttributeValueId)
+          eq(
+            productVariantAttributeValues.productAttributeValueId,
+            productAttributeValueId
+          )
         )
       );
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
-  static async deleteAllProductVariantAttributeValues(productVariantId: string): Promise<boolean> {
+  static async deleteAllProductVariantAttributeValues(
+    productVariantId: string
+  ): Promise<boolean> {
     const result = await db
       .delete(productVariantAttributeValues)
-      .where(eq(productVariantAttributeValues.productVariantId, productVariantId));
-    return result.count > 0;
+      .where(
+        eq(productVariantAttributeValues.productVariantId, productVariantId)
+      );
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }

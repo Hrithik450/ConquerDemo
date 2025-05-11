@@ -33,7 +33,7 @@ export class CartItemsModel {
     const result = await db
       .delete(cartItems)
       .where(eq(cartItems.cartItemId, cartItemId));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async getCartItemsByCartId(cartId: string): Promise<CartItem[]> {

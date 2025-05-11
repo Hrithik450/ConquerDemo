@@ -65,7 +65,7 @@ export class ProductAttributeValuesModel {
     const result = await db
       .delete(productAttributeValues)
       .where(eq(productAttributeValues.productAttributeValueId, id));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async deleteProductAttributeValueByAttribute(
@@ -80,7 +80,7 @@ export class ProductAttributeValuesModel {
           eq(productAttributeValues.attributeValueId, attributeValueId)
         )
       );
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async deleteAllProductAttributeValues(
@@ -89,6 +89,6 @@ export class ProductAttributeValuesModel {
     const result = await db
       .delete(productAttributeValues)
       .where(eq(productAttributeValues.productAttributeId, productAttributeId));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }

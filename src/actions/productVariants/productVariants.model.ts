@@ -134,6 +134,7 @@ export class ProductVariantsModel {
       price: Number(dbVariant.price),
       stock: dbVariant.stockQuantity,
       isActive: dbVariant.isActive,
+      isDefault: dbVariant.isDefault || false,
       createdAt: dbVariant.createdAt,
       updatedAt: dbVariant.updatedAt,
     };

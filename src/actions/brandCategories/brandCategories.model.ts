@@ -4,12 +4,20 @@ import { and, eq } from "drizzle-orm";
 import type { NewBrandCategory, BrandCategory } from "./brandCategories.types";
 
 export class BrandCategoriesModel {
-  static async createBrandCategory(data: NewBrandCategory): Promise<BrandCategory> {
-    const [brandCategory] = await db.insert(brandCategories).values(data).returning();
+  static async createBrandCategory(
+    data: NewBrandCategory
+  ): Promise<BrandCategory> {
+    const [brandCategory] = await db
+      .insert(brandCategories)
+      .values(data)
+      .returning();
     return brandCategory;
   }
 
-  static async getBrandCategory(brandId: string, categoryId: string): Promise<BrandCategory | null> {
+  static async getBrandCategory(
+    brandId: string,
+    categoryId: string
+  ): Promise<BrandCategory | null> {
     const [brandCategory] = await db
       .select()
       .from(brandCategories)
@@ -22,14 +30,18 @@ export class BrandCategoriesModel {
     return brandCategory || null;
   }
 
-  static async getCategoriesByBrandId(brandId: string): Promise<BrandCategory[]> {
+  static async getCategoriesByBrandId(
+    brandId: string
+  ): Promise<BrandCategory[]> {
     return await db
       .select()
       .from(brandCategories)
       .where(eq(brandCategories.brandId, brandId));
   }
 
-  static async getBrandsByCategoryId(categoryId: string): Promise<BrandCategory[]> {
+  static async getBrandsByCategoryId(
+    categoryId: string
+  ): Promise<BrandCategory[]> {
     return await db
       .select()
       .from(brandCategories)
@@ -54,7 +66,10 @@ export class BrandCategoriesModel {
     return brandCategory || null;
   }
 
-  static async deleteBrandCategory(brandId: string, categoryId: string): Promise<boolean> {
+  static async deleteBrandCategory(
+    brandId: string,
+    categoryId: string
+  ): Promise<boolean> {
     const result = await db
       .delete(brandCategories)
       .where(
@@ -63,7 +78,7 @@ export class BrandCategoriesModel {
           eq(brandCategories.categoryId, categoryId)
         )
       );
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listBrandCategories(): Promise<BrandCategory[]> {

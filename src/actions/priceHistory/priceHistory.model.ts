@@ -83,7 +83,7 @@ export class PriceHistoryModel {
 
   static async deletePriceHistory(id: string): Promise<boolean> {
     const result = await db.delete(priceHistory).where(eq(priceHistory.id, id));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async deletePriceHistoryByVariantId(
@@ -92,6 +92,6 @@ export class PriceHistoryModel {
     const result = await db
       .delete(priceHistory)
       .where(eq(priceHistory.variantId, variantId));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }

@@ -126,7 +126,7 @@ export class ContractProductAttributeValueRestrictionsModel {
           )
         )
       );
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listContractProductAttributeValueRestrictions(): Promise<

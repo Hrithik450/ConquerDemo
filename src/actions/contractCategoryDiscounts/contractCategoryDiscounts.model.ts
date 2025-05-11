@@ -81,7 +81,7 @@ export class ContractCategoryDiscountsModel {
           eq(contractCategoryDiscounts.categoryId, categoryId)
         )
       );
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listContractCategoryDiscounts(): Promise<

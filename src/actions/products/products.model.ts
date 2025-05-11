@@ -39,7 +39,10 @@ export class ProductsModel {
       .where(eq(products.categoryId, categoryId));
   }
 
-  static async updateProduct(id: string, data: Partial<NewProduct>): Promise<Product | null> {
+  static async updateProduct(
+    id: string,
+    data: Partial<NewProduct>
+  ): Promise<Product | null> {
     const [product] = await db
       .update(products)
       .set({ ...data, updatedAt: new Date() })
@@ -49,10 +52,8 @@ export class ProductsModel {
   }
 
   static async deleteProduct(id: string): Promise<boolean> {
-    const result = await db
-      .delete(products)
-      .where(eq(products.productId, id));
-    return result.count > 0;
+    const result = await db.delete(products).where(eq(products.productId, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listProducts(): Promise<Product[]> {
@@ -60,10 +61,7 @@ export class ProductsModel {
   }
 
   static async listActiveProducts(): Promise<Product[]> {
-    return await db
-      .select()
-      .from(products)
-      .where(eq(products.isActive, true));
+    return await db.select().from(products).where(eq(products.isActive, true));
   }
 
   static async searchProducts(searchTerm: string): Promise<Product[]> {
@@ -78,10 +76,7 @@ export class ProductsModel {
       .select()
       .from(products)
       .where(
-        and(
-          like(products.name, `%${searchTerm}%`),
-          eq(products.isActive, true)
-        )
+        and(like(products.name, `%${searchTerm}%`), eq(products.isActive, true))
       );
   }
 

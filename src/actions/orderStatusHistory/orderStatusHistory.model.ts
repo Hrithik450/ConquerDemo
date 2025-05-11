@@ -1,7 +1,10 @@
 import { db } from "@/lib/db";
 import { orderStatusHistory } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import type { OrderStatusHistory, NewOrderStatusHistory } from "./orderStatusHistory.types";
+import type {
+  OrderStatusHistory,
+  NewOrderStatusHistory,
+} from "./orderStatusHistory.types";
 
 export class OrderStatusHistoryModel {
   static async createOrderStatusHistory(
@@ -68,7 +71,7 @@ export class OrderStatusHistoryModel {
     const result = await db
       .delete(orderStatusHistory)
       .where(eq(orderStatusHistory.historyId, historyId));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listOrderStatusHistory(): Promise<OrderStatusHistory[]> {

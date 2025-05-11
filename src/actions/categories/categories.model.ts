@@ -25,7 +25,10 @@ export class CategoriesModel {
     return category || null;
   }
 
-  static async updateCategory(id: string, data: Partial<NewCategory>): Promise<Category | null> {
+  static async updateCategory(
+    id: string,
+    data: Partial<NewCategory>
+  ): Promise<Category | null> {
     const [category] = await db
       .update(categories)
       .set({ ...data, updatedAt: new Date() })
@@ -38,7 +41,7 @@ export class CategoriesModel {
     const result = await db
       .delete(categories)
       .where(eq(categories.categoryId, id));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listCategories(): Promise<Category[]> {

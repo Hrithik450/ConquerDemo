@@ -49,13 +49,13 @@ export class OrderItemsModel {
     const result = await db
       .delete(orderItems)
       .where(eq(orderItems.orderItemId, id));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async deleteOrderItemsByOrderId(orderId: string): Promise<boolean> {
     const result = await db
       .delete(orderItems)
       .where(eq(orderItems.orderId, orderId));
-    return result.count > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }
