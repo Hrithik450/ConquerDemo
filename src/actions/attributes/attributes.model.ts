@@ -25,7 +25,10 @@ export class AttributesModel {
     return attribute || null;
   }
 
-  static async updateAttribute(id: string, data: Partial<NewAttribute>): Promise<Attribute | null> {
+  static async updateAttribute(
+    id: string,
+    data: Partial<NewAttribute>
+  ): Promise<Attribute | null> {
     const [attribute] = await db
       .update(attributes)
       .set({ ...data, updatedAt: new Date() })
@@ -35,10 +38,8 @@ export class AttributesModel {
   }
 
   static async deleteAttribute(id: string): Promise<boolean> {
-    const result = await db
-      .delete(attributes)
-      .where(eq(attributes.id, id));
-    return result.count > 0;
+    const result = await db.delete(attributes).where(eq(attributes.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   static async listAttributes(): Promise<Attribute[]> {
