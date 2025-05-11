@@ -6,10 +6,10 @@ import type { AuditLogResponse, AuditLogsResponse } from "./auditLogs.types";
 
 export async function createAuditLog(data: unknown): Promise<AuditLogResponse> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const session = await auth();
+    // if (!session?.user) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const validatedData = auditLogSchema.parse(data);
     const log = await AuditLogsModel.createAuditLog(validatedData);
@@ -25,10 +25,10 @@ export async function getAuditLogById(
   logId: string
 ): Promise<AuditLogResponse> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const session = await auth();
+    // if (!session?.user) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const log = await AuditLogsModel.getAuditLogById(logId);
     if (!log) {
@@ -45,10 +45,10 @@ export async function getAuditLogsByUserId(
   userId: string
 ): Promise<AuditLogsResponse> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const session = await auth();
+    // if (!session?.user) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const logs = await AuditLogsModel.getAuditLogsByUserId(userId);
     return { success: true, data: logs };
@@ -63,10 +63,10 @@ export async function getAuditLogsByEntity(
   entityId: string
 ): Promise<AuditLogsResponse> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const session = await auth();
+    // if (!session?.user) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const logs = await AuditLogsModel.getAuditLogsByEntity(
       entityType,
@@ -100,10 +100,10 @@ export async function getAuditLogsByEntityType(
   entityType: string
 ): Promise<AuditLogsResponse> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const session = await auth();
+    // if (!session?.user) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const logs = await AuditLogsModel.getAuditLogsByEntityType(entityType);
     return { success: true, data: logs };
