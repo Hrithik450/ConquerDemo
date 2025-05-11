@@ -12,11 +12,11 @@ export const contractSchema = z.object({
   startDate: z
     .union([z.string(), z.date()])
     .optional()
-    .transform((val) => (val ? new Date(val) : undefined)),
+    .transform((val) => new Date(val ?? Date.now())),
   endDate: z
     .union([z.string(), z.date()])
     .optional()
-    .transform((val) => (val ? new Date(val) : undefined)),
+    .transform((val) => new Date(val ?? Date.now())),
   isActive: z.boolean().default(true),
   terms: z.string().optional(),
   notes: z.string().optional(),
