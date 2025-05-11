@@ -4,7 +4,6 @@ import { AuditLogsModel } from "./auditLogs.model";
 import { auditLogSchema } from "./auditLogs.types";
 import type { AuditLogResponse, AuditLogsResponse } from "./auditLogs.types";
 
-
 export async function createAuditLog(data: unknown): Promise<AuditLogResponse> {
   try {
     const session = await auth();
@@ -84,10 +83,10 @@ export async function getAuditLogsByAction(
   action: string
 ): Promise<AuditLogsResponse> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const session = await auth();
+    // if (!session?.user) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const logs = await AuditLogsModel.getAuditLogsByAction(action);
     return { success: true, data: logs };
@@ -116,10 +115,10 @@ export async function getAuditLogsByEntityType(
 
 export async function listAuditLogs(): Promise<AuditLogsResponse> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    // const session = await auth();
+    // if (!session?.user) {
+    //   return { success: false, error: "Unauthorized" };
+    // }
 
     const logs = await AuditLogsModel.listAuditLogs();
     return { success: true, data: logs };
