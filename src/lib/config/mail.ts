@@ -1,6 +1,12 @@
 import { createTransport } from "nodemailer";
 
-if (!process.env.EMAIL_SERVER_HOST || !process.env.EMAIL_SERVER_PORT || !process.env.EMAIL_SERVER_USER || !process.env.EMAIL_SERVER_PASSWORD || !process.env.EMAIL_FROM) {
+if (
+  !process.env.EMAIL_SERVER_HOST ||
+  !process.env.EMAIL_SERVER_PORT ||
+  !process.env.EMAIL_SERVER_USER ||
+  !process.env.EMAIL_SERVER_PASSWORD ||
+  !process.env.EMAIL_FROM
+) {
   throw new Error("Missing required email configuration environment variables");
 }
 
@@ -36,4 +42,4 @@ export const normalizeEmail = (email: string): string => {
   let [local, domain] = email.toLowerCase().trim().split("@");
   domain = domain.split(",")[0];
   return `${local}@${domain}`;
-}; 
+};
