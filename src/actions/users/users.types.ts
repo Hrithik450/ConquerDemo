@@ -11,7 +11,7 @@ export const userSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   phone: z.string().optional(),
-  role: z.enum(["admin", "employee", "customer"]).default("employee"),
+  role: z.enum(["user", "admin", "superadmin"]).default("user"),
 });
 
 // Response types for API

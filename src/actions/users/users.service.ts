@@ -7,7 +7,7 @@ export class UsersService {
     try {
       // Validate input data
       const validatedData = userSchema.parse(data);
-      
+
       // Check if user already exists
       const existingUser = await UsersModel.getUserByEmail(validatedData.email);
       if (existingUser) {
@@ -52,11 +52,14 @@ export class UsersService {
     }
   }
 
-  static async updateUser(userId: string, data: Partial<User>): Promise<UserResponse> {
+  static async updateUser(
+    userId: string,
+    data: Partial<User>
+  ): Promise<UserResponse> {
     try {
       // Validate input data
       const validatedData = userSchema.partial().parse(data);
-      
+
       const user = await UsersModel.updateUser(userId, validatedData);
       if (!user) {
         return {
